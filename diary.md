@@ -1,3 +1,13 @@
+## Entry #2 (August 15, 2025): *I already have regrets*
+
+Yeah... even the smallest things can cause pretty annoying inconveniences. In my initial grammar, I named anything that could be an identifier OR literal `ident`, which is pretty dumb in retrospect. I also hadn't included it in the `TokenType` enum for reasons I cannot begin to comprehend.
+
+This commit was going to be focused on implementing the grammar into actual code with tangible logic, rather than being a soup of hopes and dreams. I believe I may have committed an error in the grammar though: Each nonterminal's arm, except for optionally the final one, starts with a unique regular string, followed by any string of nonterminals and terminals. It may have instead been a better move to ensure that these arms start with a regular string which are followed by ONLY A SINGLE NONTERMINAL. This would help greatly with ease of parsing, with the tradeoff of more tokens to implement. I'm ignoring this potential problem for now, to see how far I can go without caring. The only change I'm adopting because of this is that the my "iterable grammar" idea won't work anymore, so it will be fully recursive. If I want to make it iterable, it would be pseudo-iterable with `async`/`await` or threads with channels.
+
+Something that did require changes to the grammar was the concept of the `Program` token. It inherently has no meaning by holding an unknowable amount of `Unit` tokens, because it doesn't actually tell the parser how to divide anything up. If each `Unit` was a line, then it would be salvageable, but that is not the case.
+
+So where does that leave us? There's an easy answer: I rewrote the entire grammar, and through the architecture out of the window. You can read more about the grammar (it's actually TWO grammars) in the [specs folder](https://github.com/philipostr/PDP/blob/main/specs), it is quite a lot more complete, and extremely well documented. I guess this is it for now, thanks for waiting for 20+ days for this update!
+
 ## Entry #1 (July 24, 2025): *Every great Oddysey has an inception*
 
 Hi there, ye who dares to venture into the darkness of poorly designed compilers, and even more poorly designed architectures.
