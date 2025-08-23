@@ -35,7 +35,7 @@ Scoped: NEWLINE
 
 Unit:  KEYWORD(If) Expr MISC(':') Result
      | KEYWORD(While) Expr MISC(':') Result   [l = true]
-     | KEYWORD(For) NAME KEYWORD(in) Expr MISC(:) Result   [l = true]
+     | KEYWORD(For) NAME OP(In) Expr MISC(:) Result   [l = true]
  [l] | KEYWORD(Continue) NEWLINE
  [l] | KEYWORD(Break) NEWLINE
  [f] | KEYWORD(Return) Expr? NEWLINE

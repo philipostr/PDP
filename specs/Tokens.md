@@ -12,5 +12,5 @@
 - `NUMBER(f64)`: A floating-point number. This also includes integers, as Python does not distinguish between the two.
 - `BOOL(bool)`: A boolean `true` or `false`.
 - `NEWLINE`: A newline character.
-- `MISC(String)`: Any miscellaneous sequence of characters that are not included in the above tokens. This includes characters such as `:`, `,`, and `.`.
+- `MISC(char)`: Any miscellaneous character that is not included in the above tokens. This includes characters such as `:`, `,`, and `.`.
 - `END`: The marker for the end of a script. This should only be generated as the final token in the stream.

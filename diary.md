@@ -1,3 +1,8 @@
+## Entry #3 (August 22, 2025) *Chewing gum and parsing code, and I'm all out of code*
+
+I'm not entirely sure how to deliminate tokens once they're lexeme has been found. What I mean is, I check if a `char` slice starts with `"for"` and conclude that I found an `for` keyword, but what if the entire word was meant to be a variable `fortress`? I can of course use a regex to validate that the lexeme is complete, but I feel like that is extremely overkill and not really _graceful_. So my current plan is to simply use helper functions that confirm different types of boundaries, and use the correct one for each token type. I don't know how well that will age since it requires me to guess every possible character that can follow a lexeme in some cases, but I think it's fine at least for now.
+
+
 ## Entry #2 (August 15, 2025): *I already have regrets*
 
 Yeah... even the smallest things can cause pretty annoying inconveniences. In my initial grammar, I named anything that could be an identifier OR literal `ident`, which is pretty dumb in retrospect. I also hadn't included it in the `TokenType` enum for reasons I cannot begin to comprehend.
@@ -6,7 +11,7 @@ This commit was going to be focused on implementing the grammar into actual code
 
 Something that did require changes to the grammar was the concept of the `Program` token. It inherently has no meaning by holding an unknowable amount of `Unit` tokens, because it doesn't actually tell the parser how to divide anything up. If each `Unit` was a line, then it would be salvageable, but that is not the case.
 
-So where does that leave us? There's an easy answer: I rewrote the entire grammar, and through the architecture out of the window. You can read more about the grammar (it's actually TWO grammars) in the [specs folder](https://github.com/philipostr/PDP/blob/main/specs), it is quite a lot more complete, and extremely well documented. I guess this is it for now, thanks for waiting for 20+ days for this update!
+So where does that leave us? There's an easy answer: I rewrote the entire grammar, and through the architecture out of the window. You can read more about the grammar (it's actually TWO grammars) in the [specs folder](https://github.com/philipostr/PDP/tree/f5cc208a2af6acffb18525721b1de7a84333c217/specs), it is quite a lot more complete, and extremely well documented. I guess this is it for now, thanks for waiting for 20+ days for this update!
 
 ## Entry #1 (July 24, 2025): *Every great Oddysey has an inception*
 
