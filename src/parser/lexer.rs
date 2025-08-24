@@ -35,13 +35,17 @@ impl Lexer {
         Self::default()
     }
 
-    pub fn finalize(&mut self) -> core::slice::Iter<Token> {
+    pub fn finalize(&mut self) -> Result<core::slice::Iter<Token>, String> {
+        if self.finished {
+            return Err("this lexer has finished its job".to_string());
+        }
+
         // Push an extra newline before the end because the grammar requires it
         self.tokens.push(Token::NEWLINE(self.next_start_line, self.next_start_col));
         self.tokens.push(Token::END);
 
         self.finished = true;
-        self.tokens.iter()
+        Ok(self.tokens.iter())
     }
 
     /// Used to advance a character iterator by lexeme. It identifies the lexeme, appends its lexed `Token` value to
@@ -50,7 +54,7 @@ impl Lexer {
     /// Returns a `Err(String)` if something couldn't be lexed properly.
     pub fn identify(&mut self, line: &[char]) -> Result<usize, String> {
         if self.finished {
-            return Err("this lexer has finished its job.".to_string());
+            return Err("this lexer has finished its job".to_string());
         }
 
         // == Actual tokenization logic starts here == //
@@ -67,12 +71,18 @@ impl Lexer {
                 for c in line {
                     if *c == ' ' {
                         num_spaces += 1;
-                    } else if *c == '#' { // we don't care about indentations if the line is only a comment
+                    } else if *c == '#' { // We don't care about indentations if the line is only a comment
                         self.next_start_line += 1;
                         return Ok(line.len() + 1);
                     } else {
                         break;
                     }
+                }
+
+                // We don't care about indentations if the line contains nothing else
+                if num_spaces == line.len() {
+                    self.next_start_line += 1;
+                    return Ok(line.len() + 1);
                 }
 
                 // Make sure the amount of spaces is valid
@@ -352,18 +362,32 @@ impl Lexer {
             self.next_start_col += idx;
             Ok(idx)
         } else if line[0] == '"' || line[0] == '\'' { // string
+            let mut result_str = String::new();
+            let mut escaped = false;
             let mut idx = 1;
-            let max_idx = line.len() - 1;
+            let max_idx = line.len();
             if max_idx > 1 {
-                while line[idx] != line[0] { // Final quote needs to match the first one
+                while line[idx] != line[0] || escaped { // Find first non-escaped matching quote
+                    if escaped {
+                        escaped = false;
+                        result_str.push(line[idx]);
+                    } else if line[idx] == '\\' {
+                        escaped = true;
+                    } else {
+                        escaped = false;
+                        result_str.push(line[idx]);
+                    }
+
                     idx += 1;
                     if idx >= max_idx {
                         return Err("malformed string (quote not closed)".to_string());
                     }
                 }
+            } else {
+                return Err("malformed string (quote not closed)".to_string());
             }
 
-            self.tokens.push(Token::STRING(line[1..idx].iter().collect::<String>(), self.next_start_line, self.next_start_col));
+            self.tokens.push(Token::STRING(result_str, self.next_start_line, self.next_start_col));
             self.next_start_col += idx + 1;
             Ok(idx + 1)
         } else if line[0].is_ascii_alphabetic() { // name
@@ -391,6 +415,262 @@ impl Lexer {
     }
 
     fn number_boundary(line: &[char], idx: usize) -> bool {
-        idx >= line.len() || (line[idx] != '.' && !line[idx].is_digit(10))
+        idx >= line.len() || (line[idx] != '.' && !line[idx].is_ascii_digit())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! char_slice {
+        ($og:expr) => {
+            &$og.chars().collect::<Vec<_>>()[..]
+        };
+    }
+
+    #[test]
+    fn test_starts_with_str() {
+        let haystack = char_slice!("hello");
+        assert!(haystack.starts_with_str("hel"));
+        assert!(haystack.starts_with_str(""));
+        assert!(haystack.starts_with_str("h"));
+        assert!(haystack.starts_with_str("hello"));
+        assert!(!haystack.starts_with_str("ello"));
+        assert!(haystack.starts_with_str("hello world"));
+    }
+
+    #[test]
+    fn test_lexer_full_usage() {
+        let py_line = char_slice!("if x + y < 100:");
+        let mut lexer = Lexer::new();
+
+        // Check return values
+        assert_eq!(lexer.identify(&py_line[..]), Ok(2));   // `if`
+        assert_eq!(lexer.identify(&py_line[2..]), Ok(1));  // ` `
+        assert_eq!(lexer.identify(&py_line[3..]), Ok(1));  // `x`
+        assert_eq!(lexer.identify(&py_line[4..]), Ok(1));  // ` `
+        assert_eq!(lexer.identify(&py_line[5..]), Ok(1));  // `+`
+        assert_eq!(lexer.identify(&py_line[6..]), Ok(1));  // ` `
+        assert_eq!(lexer.identify(&py_line[7..]), Ok(1));  // `y`
+        assert_eq!(lexer.identify(&py_line[8..]), Ok(1));  // ` `
+        assert_eq!(lexer.identify(&py_line[9..]), Ok(1));  // `<`
+        assert_eq!(lexer.identify(&py_line[10..]), Ok(1)); // ` `
+        assert_eq!(lexer.identify(&py_line[11..]), Ok(3)); // `100`
+        assert_eq!(lexer.identify(&py_line[14..]), Ok(1)); // `:`
+        assert_eq!(lexer.identify(&py_line[15..]), Ok(1)); // newline
+
+        // Check token stream
+        let mut token_stream = lexer.finalize().unwrap();
+        assert_eq!(token_stream.next(), Some(&Token::KEYWORD(Keyword::If, 0, 0)));
+        assert_eq!(token_stream.next(), Some(&Token::NAME("x".to_string(), 0, 3)));
+        assert_eq!(token_stream.next(), Some(&Token::OP(Op::Plus, 0, 5)));
+        assert_eq!(token_stream.next(), Some(&Token::NAME("y".to_string(), 0, 7)));
+        assert_eq!(token_stream.next(), Some(&Token::OP(Op::Lt, 0, 9)));
+        assert_eq!(token_stream.next(), Some(&Token::NUMBER(100.0, 0, 11)));
+        assert_eq!(token_stream.next(), Some(&Token::MISC(':', 0, 14)));
+        assert_eq!(token_stream.next(), Some(&Token::NEWLINE(0, 15)));
+        assert_eq!(token_stream.next(), Some(&Token::NEWLINE(1, 0)));
+        assert_eq!(token_stream.next(), Some(&Token::END));
+        assert_eq!(token_stream.next(), None);
+
+        // Check lexer is done
+        assert_eq!(lexer.identify(py_line).unwrap_err(), "this lexer has finished its job".to_string());
+        assert_eq!(lexer.finalize().unwrap_err(), "this lexer has finished its job".to_string());
+    }
+
+    #[test]
+    fn test_lexer_spaces() {
+        // No spaces
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("x = 10");
+        let mut col = 0;
+        while col <= py_line.len() {
+            col += lexer.identify(&py_line[col..]).expect("Should have identified successfully");
+        }
+
+        // Only spaces (invalid indentation)
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("   ");
+        let mut col = 0;
+        while col <= py_line.len() {
+            col += lexer.identify(&py_line[col..]).expect("Should have identified successfully");
+        }
+
+        // Only spaces (valid indentation)
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("    ");
+        let mut col = 0;
+        while col <= py_line.len() {
+            col += lexer.identify(&py_line[col..]).expect("Should have identified successfully");
+        }
+
+        // Spaces with comment (invalid indentation)
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("     # this is a comment");
+        let mut col = 0;
+        while col <= py_line.len() {
+            col += lexer.identify(&py_line[col..]).expect("Should have identified successfully");
+        }
+
+        // Spaces with comment (valid indentation)
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("    # this is a comment");
+        let mut col = 0;
+        while col <= py_line.len() {
+            col += lexer.identify(&py_line[col..]).expect("Should have identified successfully");
+        }
+
+        // Spaces inside the line
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("x         = 10");
+        let mut col = 0;
+        while col <= py_line.len() {
+            col += lexer.identify(&py_line[col..]).expect("Should have identified successfully");
+        }
+
+        // Valid indentation
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("    x = 10");
+        let mut col = 0;
+        while col <= py_line.len() {
+            col += lexer.identify(&py_line[col..]).expect("Should have identified successfully");
+        }
+
+        // Invalid indentation
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("   x = 10");
+        assert_eq!(lexer.identify(py_line).unwrap_err(), "unknown amount of indentations, number of spaces should be a multiple of 4");
+    }
+
+    #[test]
+    fn test_lexer_numbers() {
+        // Integer
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("156");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NUMBER(156.0, 0, 0)));
+
+        // Decimal number
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("156.89");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NUMBER(156.89, 0, 0)));
+
+        // Zero
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("0");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NUMBER(0.0, 0, 0)));
+
+        // Leading zeroes
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("0000017");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NUMBER(17.0, 0, 0)));
+
+        // Trailing zeroes
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("17.10000");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NUMBER(17.1, 0, 0)));
+
+        // More than one decimal point
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("156.1.0");
+        lexer.identify(py_line).expect_err("should not compile");
+
+        // Non-numerical characters
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("156ab");
+        lexer.identify(py_line).expect_err("should not compile");
+    }
+
+    #[test]
+    fn test_lexer_strings() {
+        // To facilitate building strings
+        let double_quote = "\"";
+        let single_quote = "'";
+        let escape = "\\";
+
+        // Double-quoted
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{double_quote}hello world{double_quote}"));
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::STRING("hello world".to_string(), 0, 0)));
+
+        // Single-quoted
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{single_quote}hello world{single_quote}"));
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::STRING("hello world".to_string(), 0, 0)));
+
+        // Empty string
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{double_quote}{double_quote}"));
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::STRING("".to_string(), 0, 0)));
+
+        // Escaped double-quote
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{double_quote}{escape}{double_quote}{double_quote}")); // Looks like `\"`
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::STRING("\"".to_string(), 0, 0)));
+
+        // Escaped back-slash
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{double_quote}{escape}{escape}{double_quote}")); // Looks like `\\"`
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::STRING("\\".to_string(), 0, 0)));
+
+        // Unterminated double-quote
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{double_quote}"));
+        lexer.identify(py_line).expect_err("should not compile");
+
+        // Unterminated single-quote
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{single_quote}"));
+        lexer.identify(py_line).expect_err("should not compile");
+
+        // Mixed quotes
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!(format!("{double_quote}{single_quote}"));
+        lexer.identify(py_line).expect_err("should not compile");
+    }
+
+    #[test]
+    fn test_lexer_names() {
+        // Normal variable
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("var");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NAME("var".to_string(), 0, 0)));
+
+        // With underscores
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("my_var_name");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NAME("my_var_name".to_string(), 0, 0)));
+
+        // With digits
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("var123");
+        lexer.identify(py_line).unwrap();
+        assert_eq!(lexer.finalize().unwrap().next(), Some(&Token::NAME("var123".to_string(), 0, 0)));
+
+        // With period
+        let mut lexer = Lexer::new();
+        let py_line = char_slice!("var.func()");
+        lexer.identify(py_line).unwrap();
+        lexer.identify(&py_line[3..]).unwrap();
+        let mut token_stream = lexer.finalize().unwrap();
+        assert_eq!(token_stream.next(), Some(&Token::NAME("var".to_string(), 0, 0)));
+        assert_eq!(token_stream.next(), Some(&Token::MISC('.', 0, 3)));
+    }
+
+    #[test]
+    fn test_lexer_exhaustive() {
+        // I'm too lazy to test every single token, maybe I'll do it later
     }
 }

@@ -87,10 +87,10 @@ impl Parser {
         let script = fs::read_to_string(filename)
             .map_err(|e| ParseError::general(&e.to_string()))?;
 
-        self.parse_from_str(script)
+        self.parse_from_str(&script)
     }
 
-    pub fn parse_from_str(&mut self, script: String) -> Result<(), ParseError> {
+    pub fn parse_from_str(&mut self, script: &str) -> Result<(), ParseError> {
         let mut lex = lexer::Lexer::new();
 
         for (line, line_str) in script.lines().enumerate() {
@@ -117,7 +117,9 @@ impl Parser {
             }
         }
 
-        let token_stream = lex.finalize();
+        let token_stream = lex.finalize().map_err(|e| {
+            ParseError::general(&e)
+        })?;
         token_stream.for_each(|t| {
             println!("{t:?}");
         });

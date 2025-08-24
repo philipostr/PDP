@@ -2,6 +2,7 @@
 /// to signify their line and col respectively. This is except for `END`,
 /// which is quite obviously at the end of the token stream and does not
 /// stand for any real lexeme.
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, PartialEq)]
 pub enum Token {
     INDENT(usize, usize),
