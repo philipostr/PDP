@@ -1,3 +1,25 @@
+## Entry #4 (August 29, 2025) *Digging a hole straight into token-parsing hell*
+
+### Idiomatic Rust architecture
+
+Since I'm using Rust for this project, I want to make my logic as idiomatically Rust as possible. As such, for the implementation of the TPG, I'm using enums to describe every node type, and variants for every possible arm, holding their recursive nodes in a tuple. For the meta-nodes (`*`, `+`, `?`, etc.), I'm defining structs for each one as well.
+
+I'm not sure how the performance will be for doing all of this, nor if it will even make sense as an architecture later, but that's the entire point of the project: to see how far I can make it with my inexperience and lack of knowledge, find the point where my initial decisions made everything impossible, and adapt/pivot that initial decision as best I can.
+
+In fact, I have already found a problem with being Rustic in my Tokens code. My plan, when making the TPG, was to use `Token`s as nodes as well. That's all fine and good, but I just realized that I can't actually specify specific tokens as types. This is a problem because, instead of defining the `Result` node's 2nd arm as having a `Token::NAME`, I can only specify that it has a `Token`. I can obviously work around this by assuming that this token is a `NAME`, but that's not particularly pretty. I could also make a tuple-struct for each `Token` type, but that's not pretty either. I'm probably going with the latter, but I'm not happy about it.
+
+As a side note, because of the immense amount of helper macros and functions I am making, I am heavily considering writing a crate for general TPBA language parsing, that can be used for any language as long as a TPG and PTAG were already built for it. Of course, this idea would only have any semblance of legitimacy AFTER I'm done with this current project.
+
+### Errors from quantified nodes
+
+I have come across an interesting problem; in my current implementation, I programmed the quantified nodes (`*`, `+`, and `?`) to keep matching until an error is found, roll back to the beginning of the current match attempt, and continue with the next node. I am now realizing, rather stupidly, that I will always be throwing out any errors that I find within those quantified nodes. This specifically poses a problem for the `Program` node, which is always the root of the parse tree. Non-trivially, this node is always `Scoped* END`, and because we throw out all errors found within `Scoped*`, the ultimate error will be that the next node doesn't match `END`. That's hardly helpful to the programmer...
+
+My potentially naive solution is to discard the error only if the first token did not match anything, and propagate the error if any valid first token WAS matched. More nuance may or may not be necessary, I will found out by experimenting.
+
+### Debugging is difficult
+
+If there's a single thing I have learned the importance of, it's logging. I made a massive 1.2k line file in one go, without ever having run it a single time to see if what I had so far was working. That isn't necessarily my fault, since for things to work properly, everything needed to be finished. So when I finally sat down and tried running it... well, I didn't have a great time. Of course there were bugs, but I had no way of finding them since errors propagate up the call stack, and so I would never know where they originated from nor how they came to be. I therefore added debug and trace logging everywhere, and was finally able to iron out all the bugs I could get my grubby little hands on.
+
 ## Entry #3 (August 22, 2025) *Chewing gum and parsing code, and I'm all out of code*
 
 I'm not entirely sure how to deliminate tokens once they're lexeme has been found. What I mean is, I check if a `char` slice starts with `"for"` and conclude that I found an `for` keyword, but what if the entire word was meant to be a variable `fortress`? I can of course use a regex to validate that the lexeme is complete, but I feel like that is extremely overkill and not really _graceful_. So my current plan is to simply use helper functions that confirm different types of boundaries, and use the correct one for each token type. I don't know how well that will age since it requires me to guess every possible character that can follow a lexeme in some cases, but I think it's fine at least for now.

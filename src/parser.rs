@@ -3,9 +3,12 @@ mod lexer;
 mod ptag;
 mod tpg;
 
-use std::{fmt::Display, fs};
+use std::{fmt::Display, fs, sync::OnceLock};
 
 use colored::Colorize;
+
+static FILENAME: OnceLock<String> = OnceLock::new();
+static LINES: OnceLock<Vec<String>> = OnceLock::new();
 
 #[derive(Debug)]
 enum ParseErrorType {
@@ -57,13 +60,21 @@ impl ParseError {
         }
     }
 
-    pub fn marked(filename: &str, msg: &str, line: usize, col: usize, line_str: &str) -> Self {
+    pub fn marked(msg: &str, line: usize, col: usize) -> Self {
+        let filename = FILENAME.get_or_init(|| "unset".to_string());
+        let line_string = match LINES.get() {
+            Some(s) => &s[line],
+            None => {
+                return Self::general("Fatal error: lines were never set")
+            }
+        };
+
         Self {
             err_type: ParseErrorType::Marked {
-                filename: filename.to_string(),
+                filename: filename.clone(),
                 line,
                 col, 
-                line_string: line_str.to_string() 
+                line_string: line_string.clone()
             },
             msg: msg.to_string()
         }
@@ -71,19 +82,15 @@ impl ParseError {
 }
 
 #[derive(Debug, Default)]
-pub struct Parser {
-    filename: String
-}
+pub struct Parser {}
 
 impl Parser {
     pub fn new() -> Self {
-        Self {
-            filename: "unset".to_string()
-        }
+        Self {}
     }
 
     pub fn parse_from_file(&mut self, filename: &str) -> Result<(), ParseError> {
-        self.filename = filename.to_string();
+        FILENAME.set(filename.to_string()).unwrap();
         let script = fs::read_to_string(filename)
             .map_err(|e| ParseError::general(&e.to_string()))?;
 
@@ -93,7 +100,11 @@ impl Parser {
     pub fn parse_from_str(&mut self, script: &str) -> Result<(), ParseError> {
         let mut lex = lexer::Lexer::new();
 
-        for (line, line_str) in script.lines().enumerate() {
+        LINES.set(script.lines()
+            .map(|l| l.to_string())
+            .collect()).unwrap();
+
+        for (line, line_str) in LINES.get().unwrap().iter().enumerate() {
             let line_chars = line_str.chars()
                 .collect::<Vec<char>>();
             // Not `line_str.len() - 1` because we want to count the excluded newline 
@@ -107,22 +118,19 @@ impl Parser {
                 col += lex.identify(&line_chars[col..])
                     .map_err(|e| {
                         ParseError::marked(
-                            &self.filename,
                             &e, 
                             line, 
-                            col, 
-                            line_str
+                            col
                         )
                     })?;
             }
         }
 
-        let token_stream = lex.finalize().map_err(|e| {
+        let token_stream = dbg!(lex.finalize().map_err(|e| {
             ParseError::general(&e)
-        })?;
-        token_stream.for_each(|t| {
-            println!("{t:?}");
-        });
+        })?);
+
+        tpg::parse_tokens(token_stream).map(|tree| dbg!(tree))?;
 
         Ok(())
     }

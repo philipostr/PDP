@@ -5,7 +5,7 @@
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, PartialEq)]
 pub enum Token {
-    INDENT(usize, usize),
+    INDENT(usize, usize, usize),
     OP(Op, usize, usize),
     ASOP(Asop, usize, usize),
     KEYWORD(Keyword, usize, usize),
@@ -19,12 +19,32 @@ pub enum Token {
     END,
 }
 
+impl Token {
+    pub fn line_and_col(&self) -> (usize, usize) {
+        use Token::*;
+        match self {
+            INDENT(_, line, col) => (*line, *col),
+            OP(_, line, col) => (*line, *col),
+            ASOP(_, line, col) => (*line, *col),
+            KEYWORD(_, line, col) => (*line, *col),
+            NAME(_, line, col) => (*line, *col),
+            BRACKET(_, line, col) => (*line, *col),
+            STRING(_, line, col) => (*line, *col),
+            NUMBER(_, line, col) => (*line, *col),
+            BOOL(_, line, col) => (*line, *col),
+            NEWLINE(line, col) => (*line, *col),
+            MISC(_, line, col) => (*line, *col),
+            END => (0, 0),
+        }
+    }
+}
+
 /// All operators are binary only, except for:
 /// * `Plus`: Binary AND Unary
 /// * `Minus`: Binary AND Unary
 /// * `Not`: Unary ONLY
 /// * `BWNot`: Unary ONLY
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone,PartialEq, Eq)]
 pub enum Op {
     /* Arithmetic operators */
     Plus,   // +
@@ -61,7 +81,7 @@ pub enum Op {
     NotIn, // not in
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Asop {
     Assign,        // =
     AddAssign,     // +=
@@ -79,7 +99,7 @@ pub enum Asop {
     ShRightAssign, // >>=
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Keyword {
     If,
     While,
