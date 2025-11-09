@@ -8,7 +8,9 @@ fn main() {
         .format_source_path(true)
         .format_timestamp(None)
         .format_target(false)
-        .target(env_logger::Target::Pipe(Box::new(File::create("pdp.log").unwrap())))
+        .target(env_logger::Target::Pipe(Box::new(
+            File::create("pdp_out/pdp.log").unwrap(),
+        )))
         .init();
 
     let mut parser = parser::Parser::new();

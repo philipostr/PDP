@@ -44,7 +44,7 @@ impl Token {
 /// * `Minus`: Binary AND Unary
 /// * `Not`: Unary ONLY
 /// * `BWNot`: Unary ONLY
-#[derive(Debug, Clone,PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Op {
     /* Arithmetic operators */
     Plus,   // +

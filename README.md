@@ -1,5 +1,5 @@
 # PDP
-Poorly Designed Python. I try to (badly) build a Python-like Interpreter from scratch in Rust
+Poorly Designed Python. I try to (badly) build a Python-like interpreter from scratch in Rust
 
 ## Documentation
 
@@ -21,7 +21,11 @@ https://github.com/philipostr/PDP/blob/main/specs/TPG.md
 
 To run unoptimized with trace logging, run (modified as necessary):
 ```
-RUST_LOG=<target-module>=trace RUSTFLAGS="-Awarnings" cargo run 2> pdp_out.txt
+RUST_LOG=trace RUSTFLAGS="-Awarnings" cargo run
 ```
 
-Logs (if any) will be sent to `pdp.log`, and the outputs of every stage (token stream, concrete syntax tree, AST, etc.) will be put into `pdp_out.txt`
+The following files will be created under the `pdp_out/` directory:
+- `pdp.log`: The logs, if any, that were generated during execution.
+- `token_stream.txt`: A pretty-print of the token-stream that was taken from the Python code.
+- `parse_tree.txt`: A pretty-print of the concrete parse tree that was constructed from the token stream.
+- `ast.txt`: A pretty-print of the abstract syntax tree that was extracted from the parse tree.

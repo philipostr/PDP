@@ -1,3 +1,13 @@
+## Entry #5 (November 9, 2025) *Mo' AST nodes, mo' problems*
+
+I have made a severe, and continuous, lapse in my judgement. Specifically, in my creation of the PTAG. I thought I could be all smart and lazy and say "hey, look at me, I can get away with not specifying the patterns I need!". I did, in fact, need to specify the patterns I needed. Or better yet, I didn't **need** to, but it would have saved me 86 of my seemingly 57.1 million years of an eternally suffering existence in building this project.
+
+As such, I needed to rewrite the PTAG almost in its entirety. Not the general concept of course, that's all perfect because I'm a mad genius. But I did write out all the possible input nodes because I was taking an incredibly long time to figure out what to write in each and every `AstNode::from_*()` method. Then, after getting through several of those, I realized that I did something wrong and had to restart. So here I am, seconds after convincing myself to purge it all and recommence from the beninging (shout out if you know the reference), deciding to rewrite the PTAG to make my life easier later.
+
+Also, PDP does not currently have, with a high likelyhood that it will **never** have, order of operations. I could possibly implement it in the grammars, but NO. THAT WOULD BE UGLY AND I DON'T WANT IT.
+
+**Update:** I just finished implementing the PTAG, and therefore the AST generation. I have been experimenting and playing around with it, and it seems like I only had to fix a single very minor logic error and everything else is working 100% correctly on first try. This has been my biggest success yet, as well as my biggest commit. Yippee!
+
 ## Entry #4 (August 29, 2025) *Digging a hole straight into token-parsing hell*
 
 ### Idiomatic Rust architecture
@@ -22,7 +32,7 @@ If there's a single thing I have learned the importance of, it's logging. I made
 
 ## Entry #3 (August 22, 2025) *Chewing gum and parsing code, and I'm all out of code*
 
-I'm not entirely sure how to deliminate tokens once they're lexeme has been found. What I mean is, I check if a `char` slice starts with `"for"` and conclude that I found an `for` keyword, but what if the entire word was meant to be a variable `fortress`? I can of course use a regex to validate that the lexeme is complete, but I feel like that is extremely overkill and not really _graceful_. So my current plan is to simply use helper functions that confirm different types of boundaries, and use the correct one for each token type. I don't know how well that will age since it requires me to guess every possible character that can follow a lexeme in some cases, but I think it's fine at least for now.
+I'm not entirely sure how to deliminate tokens once their lexeme has been identified. What I mean is, I check if a `char` slice starts with `"for"` and conclude that I found an `for` keyword, but what if the entire word was meant to be a variable `fortress`? I can of course use a regex to validate that the lexeme is complete, but I feel like that is extremely overkill and not really _graceful_. So my current plan is to simply use helper functions that confirm different types of boundaries, and use the correct one for each token type. I don't know how well that will age since it requires me to guess every possible character that can follow a lexeme in some cases, but I think it's fine at least for now.
 
 
 ## Entry #2 (August 15, 2025): *I already have regrets*
@@ -33,7 +43,7 @@ This commit was going to be focused on implementing the grammar into actual code
 
 Something that did require changes to the grammar was the concept of the `Program` token. It inherently has no meaning by holding an unknowable amount of `Unit` tokens, because it doesn't actually tell the parser how to divide anything up. If each `Unit` was a line, then it would be salvageable, but that is not the case.
 
-So where does that leave us? There's an easy answer: I rewrote the entire grammar, and through the architecture out of the window. You can read more about the grammar (it's actually TWO grammars) in the [specs folder](https://github.com/philipostr/PDP/tree/f5cc208a2af6acffb18525721b1de7a84333c217/specs), it is quite a lot more complete, and extremely well documented. I guess this is it for now, thanks for waiting for 20+ days for this update!
+So where does that leave us? There's an easy answer: I rewrote the entire grammar, and threw the architecture out of the window. You can read more about the grammar (it's actually TWO grammars) in the [specs folder](https://github.com/philipostr/PDP/tree/f5cc208a2af6acffb18525721b1de7a84333c217/specs), it is quite a lot more complete, and extremely well documented. I guess this is it for now, thanks for waiting for 20+ days for this update!
 
 ## Entry #1 (July 24, 2025): *Every great Oddysey has an inception*
 

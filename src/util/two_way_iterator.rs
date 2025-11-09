@@ -3,7 +3,7 @@ use std::ops::{Index, RangeFull};
 #[derive(Debug)]
 pub struct TwoWayIterator<'a, T> {
     source: &'a [T],
-    cursor: usize
+    cursor: usize,
 }
 
 impl<'a, T> Iterator for TwoWayIterator<'a, T> {
@@ -23,11 +23,11 @@ impl<'a, T> Iterator for TwoWayIterator<'a, T> {
 impl<'a, T> TwoWayIterator<'a, T> {
     pub fn from_source<I>(source: &'a I) -> Self
     where
-        I: Index<RangeFull, Output = [T]>
+        I: Index<RangeFull, Output = [T]>,
     {
         Self {
             source: &source[..],
-            cursor: 0
+            cursor: 0,
         }
     }
 

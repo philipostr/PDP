@@ -79,6 +79,12 @@ ExprUnary: OP(Minus) ExprUnit
 ```
 
 ```
+// Helper node for Expr to have multiple subexpressions joined through binary operations.
+
+ExprBinary: OP ExprUnit
+```
+
+```
 // The main container of any kind of expression.
 
 ExprUnit: NAME NameExpr
@@ -88,12 +94,6 @@ ExprUnit: NAME NameExpr
         | STRING
         | NUMBER
         | BOOLEAN
-```
-
-```
-// Helper node for Expr to have multiple subexpressions joined through binary operations.
-
-ExprBinary: OP ExprUnit
 ```
 
 ```

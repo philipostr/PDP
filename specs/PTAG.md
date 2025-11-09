@@ -5,104 +5,231 @@
 *This is the grammar used for the bottom-up abstraction stage of TPBA.*
 
 ```
-Index: ... ⟶ index
+Index: expr ⟶ access
 ```
 
 ```
-DictTail: ... ⟶ dictionary
+DictTail: string expr ⟶ dictionary
 ```
 
 ```
-Dict: ... ⟶ dictionary
+Dict: string expr dictionary* ⟶ dictionary
 ```
 
 ```
-ParamsTail: ... ⟶ param
+ParamsTail: name ⟶ parameters
 ```
 
 ```
-Params: ... ⟶ params_list
+Params: name parameters* ⟶ parameters
 ```
 
 ```
-ListTail: (...a) ⟶ a
+ListTail: expr
 ```
 
 ```
-List: ... ⟶ list
+List: expr expr*  ⟶ expr+
 ```
 
 ```
-BracExpr: dictionary ⟶ dictionary
-          list       ⟶ set
+BracExpr.1: dictionary
 ```
 
 ```
-NameExpr: bracket('(') (...) bracket(')') ⟶ params_list
-          empty                           ⟶ empty
-          index{≥1}                       ⟶ index_chain
+BracExpr.2: expr+ ⟶ set
 ```
 
 ```
-ExprBinary: ... ⟶ binary_op_lhs
+NameExpr.1: empty ⟶ arguments
+            expr+ ⟶ arguments
 ```
 
 ```
-ExprUnit: name params_list                     ⟶ function_call
-          name empty                           ⟶ variable
-          name index_chain                     ⟶ variable
-          bracket('(') (...a) bracket(')')     ⟶ a
-          bracket('[') (...) bracket(']')      ⟶ list
-          bracket('{') dictionary bracket('}') ⟶ dictionary
-          bracket('{') set bracket('}')        ⟶ set
-          bracket('{') empty bracket('}')      ⟶ dictionary
-          (...a)                               ⟶ a
+NameExpr.2: empty   ⟶ empty
+            access+ ⟶ access
 ```
 
 ```
-ExprUnary: op(Minus) (...) ⟶ unary_op
-           op(Not) (...)   ⟶ unary_op
-           (...a)          ⟶ a
+ExprUnit.1: name arguments ⟶ function_call
+            name empty     ⟶ variable
+            name access    ⟶ variable
 ```
 
 ```
-Expr: (...a) empty        ⟶ a
-      (...) binary_op{≥1} ⟶ binary_op_chain
+ExprUnit.2: expr
 ```
 
 ```
-SideEffect: bracket('(') (...a) bracket(')') ⟶ list
-            (...) asop (...)                 ⟶ assign_op_lhs
+ExprUnit.3: empty ⟶ list
+            expr+ ⟶ list
 ```
 
 ```
-Body: keyword(Return) ... ⟶ return_stmt
-      ...                 ⟶ block
+ExprUnit.4: empty      ⟶ dictionary
+            dictionary ⟶ dictionary
+            set        ⟶ set
 ```
 
 ```
-Result: name list empty          ⟶ function_call
-        name assign_op_lhs empty ⟶ assign_op
-        ...                      ⟶ block
+ExprUnit.5: string
 ```
 
 ```
-Unit: keyword(If) ...          ⟶ if_stmt
-      keword(For) ...          ⟶ for_loop
-      keyword(While) ...       ⟶ while_loop
-      keyword(Continue) ...    ⟶ continue_stmt
-      keyword(Break) ...       ⟶ break_stmt
-      keyword(Return) ...      ⟶ return_stmt
-      keyword(def) ...         ⟶ function_def
-      name list empty          ⟶ function_call
-      name assign_op_lhs empty ⟶ block
+ExprUnit.6: number
 ```
 
 ```
-Scoped: empty             ⟶ empty
-        empty{...} (...a) ⟶ a
+ExprUnit.7: boolean
 ```
 
 ```
-Program: ... ⟶ script
+ExprBinary: op function_call ⟶ binary_op_rhs
+            op variable      ⟶ binary_op_rhs
+            op expr          ⟶ binary_op_rhs
+            op list          ⟶ binary_op_rhs
+            op dictionary    ⟶ binary_op_rhs
+            op set           ⟶ binary_op_rhs
+            op string        ⟶ binary_op_rhs
+            op number        ⟶ binary_op_rhs
+            op boolean       ⟶ binary_op_rhs
+```
+
+```
+ExprUnary.1: function_call ⟶ expr
+             variable      ⟶ expr
+             expr          ⟶ expr
+             list          ⟶ expr
+             dictionary    ⟶ expr
+             set           ⟶ expr
+             string        ⟶ expr
+             number        ⟶ expr
+             boolean       ⟶ expr
+```
+
+```
+ExprUnary.2: function_call ⟶ expr
+             variable      ⟶ expr
+             expr          ⟶ expr
+             list          ⟶ expr
+             dictionary    ⟶ expr
+             set           ⟶ expr
+             string        ⟶ expr
+             number        ⟶ expr
+             boolean       ⟶ expr
+```
+
+```
+ExprUnary.3: function_call ⟶ function_call
+             variable      ⟶ variable
+             expr          ⟶ expr
+             list          ⟶ list
+             dictionary    ⟶ dictionary
+             set           ⟶ set
+             string        ⟶ string
+             number        ⟶ number
+             boolean       ⟶ boolean
+```
+
+```
+Expr: function_call binary_op_rhs* ⟶ expr
+      variable binary_op_rhs*      ⟶ expr
+      expr binary_op_rhs*          ⟶ expr
+      list binary_op_rhs*          ⟶ expr
+      dictionary binary_op_rhs*    ⟶ expr
+      set binary_op_rhs*           ⟶ expr
+      string binary_op_rhs*        ⟶ expr
+      number binary_op_rhs*        ⟶ expr
+      boolean binary_op_rhs*       ⟶ expr
+```
+
+```
+SideEffect.1: empty ⟶ arguments
+              expr+ ⟶ arguments
+```
+
+```
+SideEffect.2: access* asop expr ⟶ assign_op_rhs
+```
+
+```
+Body.1: (empty|if_stmt|while_loop|for_loop|continue|break|return_stmt|function_def|function_call|assign_op)* ⟶ block
+```
+
+```
+Body.2: expr ⟶ return_stmt
+```
+
+```
+Result.1: (empty|if_stmt|while_loop|for_loop|continue|break|return_stmt|function_def|function_call|assign_op)+ ⟶ block
+```
+
+```
+Result.2: name arguments     ⟶ function_call
+          name assign_op_rhs ⟶ assign_op
+```
+
+```
+Unit.1: expr function_call ⟶ if_stmt
+        expr assign_op     ⟶ if_stmt
+        expr block         ⟶ if_stmt
+```
+
+```
+Unit.2: expr function_call ⟶ while_loop
+        expr assign_op     ⟶ while_loop
+        expr block         ⟶ while_loop
+```
+
+```
+Unit.3: name expr function_call ⟶ for_loop
+        name expr assign_op     ⟶ for_loop
+        name expr block         ⟶ for_loop
+```
+
+```
+Unit.4: continue
+```
+
+```
+Unit.5: break
+```
+
+```
+Unit.6: empty ⟶ return_stmt
+        expr  ⟶ return_stmt
+```
+
+```
+Unit.7: name parameters block       ⟶ function_def
+        name parameters return_stmt ⟶ function_def
+```
+
+```
+Unit.8: name arguments     ⟶ function_call
+        name assign_op_rhs ⟶ assign_op
+```
+
+```
+Scoped.1: empty
+```
+
+```
+Scoped.2: if_stmt
+          while_loop
+          for_loop
+          continue
+          break
+          return_stmt
+          function_def
+          function_call
+          assign_op
+```
+
+```
+Program.1: empty
+```
+
+```
+Program.2: (empty|if_stmt|while_loop|for_loop|continue|break|return_stmt|function_def|function_call|assign_op)* ⟶ block
 ```

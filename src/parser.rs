@@ -6,6 +6,7 @@ mod tpg;
 use std::{fmt::Display, fs, sync::OnceLock};
 
 use colored::Colorize;
+use log::{info, warn};
 
 static FILENAME: OnceLock<String> = OnceLock::new();
 static LINES: OnceLock<Vec<String>> = OnceLock::new();
@@ -18,7 +19,7 @@ enum ParseErrorType {
         col: usize,
         line_string: String,
     },
-    General
+    General,
 }
 
 #[derive(Debug)]
@@ -30,23 +31,24 @@ pub struct ParseError {
 impl Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.err_type {
-            ParseErrorType::Marked{filename, line, col, line_string} => {
-                let location = format!("{filename}:{}:{}", line+1, col+1);
-                let cursor = str::repeat(" ", col+1) + "^";
+            ParseErrorType::Marked {
+                filename,
+                line,
+                col,
+                line_string,
+            } => {
+                let location = format!("{filename}:{}:{}", line + 1, col + 1);
+                let cursor = str::repeat(" ", col + 1) + "^";
                 f.write_str(&format!(
-                    "({location}) {} {}\n  {} {line_string}\n   {}", 
-                    "error:".red().bold(), 
+                    "({location}) {} {}\n  {} {line_string}\n   {}",
+                    "error:".red().bold(),
                     self.msg.bold(),
                     "|".blue(),
                     cursor.red().bold()
                 ))
-            },
+            }
             ParseErrorType::General => {
-                f.write_str(&format!(
-                    "{}: {}",
-                    "error".red().bold(),
-                    self.msg.bold()
-                ))
+                f.write_str(&format!("{}: {}", "error".red().bold(), self.msg.bold()))
             }
         }
     }
@@ -56,7 +58,7 @@ impl ParseError {
     pub fn general(msg: &str) -> Self {
         Self {
             err_type: ParseErrorType::General,
-            msg: msg.to_string()
+            msg: msg.to_string(),
         }
     }
 
@@ -64,19 +66,17 @@ impl ParseError {
         let filename = FILENAME.get_or_init(|| "unset".to_string());
         let line_string = match LINES.get() {
             Some(s) => &s[line],
-            None => {
-                return Self::general("Fatal error: lines were never set")
-            }
+            None => return Self::general("Fatal error: lines were never set"),
         };
 
         Self {
             err_type: ParseErrorType::Marked {
                 filename: filename.clone(),
                 line,
-                col, 
-                line_string: line_string.clone()
+                col,
+                line_string: line_string.clone(),
             },
-            msg: msg.to_string()
+            msg: msg.to_string(),
         }
     }
 }
@@ -91,23 +91,23 @@ impl Parser {
 
     pub fn parse_from_file(&mut self, filename: &str) -> Result<(), ParseError> {
         FILENAME.set(filename.to_string()).unwrap();
-        let script = fs::read_to_string(filename)
-            .map_err(|e| ParseError::general(&e.to_string()))?;
+        let script =
+            fs::read_to_string(filename).map_err(|e| ParseError::general(&e.to_string()))?;
 
         self.parse_from_str(&script)
     }
 
     pub fn parse_from_str(&mut self, script: &str) -> Result<(), ParseError> {
+        info!("Producing token stream");
         let mut lex = lexer::Lexer::new();
 
-        LINES.set(script.lines()
-            .map(|l| l.to_string())
-            .collect()).unwrap();
+        LINES
+            .set(script.lines().map(|l| l.to_string()).collect())
+            .unwrap();
 
         for (line, line_str) in LINES.get().unwrap().iter().enumerate() {
-            let line_chars = line_str.chars()
-                .collect::<Vec<char>>();
-            // Not `line_str.len() - 1` because we want to count the excluded newline 
+            let line_chars = line_str.chars().collect::<Vec<char>>();
+            // Not `line_str.len() - 1` because we want to count the excluded newline
             let max_col = line_str.len();
             let mut col = 0;
 
@@ -115,22 +115,37 @@ impl Parser {
             // `col` goes up to AND INCLUDING `max_col` to account for the newline, which
             // is not included in the char slice.
             while col <= max_col {
-                col += lex.identify(&line_chars[col..])
-                    .map_err(|e| {
-                        ParseError::marked(
-                            &e, 
-                            line, 
-                            col
-                        )
-                    })?;
+                col += lex
+                    .identify(&line_chars[col..])
+                    .map_err(|e| ParseError::marked(&e, line, col))?;
             }
         }
 
-        let token_stream = dbg!(lex.finalize().map_err(|e| {
-            ParseError::general(&e)
-        })?);
+        let token_stream = lex.finalize().map_err(|e| ParseError::general(&e))?;
+        if let Err(e) = fs::write(
+            "pdp_out/token_stream.txt",
+            format!("{token_stream:#?}").as_bytes(),
+        ) {
+            eprintln!("Warning: couldn't output token stream: {e}");
+            warn!("couldn't output token stream: {e}");
+        }
 
-        tpg::parse_tokens(token_stream).map(|tree| dbg!(tree))?;
+        info!("Generating concrete parse tree and AST");
+        let parse_results = tpg::parse_tokens(token_stream)?;
+        if let Err(e) = fs::write(
+            "pdp_out/parse_tree.txt",
+            format!("{:#?}", parse_results.parse_node).as_bytes(),
+        ) {
+            eprintln!("Warning: couldn't output parse tree: {e:?}");
+            warn!("couldn't output parse tree: {e:?}");
+        }
+        if let Err(e) = fs::write(
+            "pdp_out/ast.txt",
+            format!("{:#?}", parse_results.ast_node).as_bytes(),
+        ) {
+            eprintln!("Warning: couldn't output AST: {e:?}");
+            eprintln!("couldn't output AST: {e:?}");
+        }
 
         Ok(())
     }

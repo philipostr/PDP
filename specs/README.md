@@ -5,6 +5,7 @@
 &emsp;&emsp;[Example](#example)  
 &emsp;[PTAG (Parse Tree Abstraction Grammar)](#ptag-parse-tree-abstraction-grammar)  
 &emsp;&emsp;[Syntax](#syntax-1)  
+&emsp;&emsp;[Building a PTAG](#building-a-ptag)  
 &emsp;&emsp;[Example](#example-1)  
 
 # TPBA (Top-down Parsing, Bottom-up Abstraction)
@@ -69,16 +70,16 @@ HeadOfThePyramid: CHAR('*') NEWLINE StarPyramid   [p += 1]
 
 ```
 StarPyramid: END
-           | CHAR('*'){p} Comment
+           | CHAR('*'){p} Comment StarPyramid
 ```
 
 ```
 HashPyramid: END
-           | CHAR('#'){p} Comment
+           | CHAR('#'){p} Comment HashPyramid
 ```
 
 ```
-Comment:    NEWLINE   [p += 1]
+Comment:    NEWLINE          [p += 1]
  [p even] | STRING NEWLINE   [p += 1]
 ```
 
@@ -144,31 +145,57 @@ Basically, the idea of a PTAG is to describe an abstraction for every possible (
 ### Syntax
 
 * The LHS of an abstraction relationship is the concrete syntax nonterminal, since it has not yet been abstracted. This should, of course, be in PascalCase.
-* Terminals are implicitly abstracted to an abstract version of themselves, which is the same but in snake_case. They should not be listed explicitly, it would only add unnecessary noise. The exceptions are whitespace or meta terminals, which get abstracted to `empty`.
-* An abstraction arm within an abstraction relationship has the abstract children in the LHS, and the resultant abstraction on the RHS. The syntax of an arm LHS is as follows:
-    * The order of children, of course, matters.
-    * `...` can be used to include any single or list of children, but must be the final declaration in the arm.
-    * `(...)` can be used to include any single child in that location.
-    * `(...a)` can be used to include any single child in that location, and bind that child to the generic `a` for use in the RHS.
-    * A `*`, `+`, `?`, `{amount}` can be used to denote varying amounts of what it describes, but cannot be used with `...`. To keep consistency, `{...}` denotes any amount including 0.
+* Terminals are implicitly abstracted to an abstract version of themselves, which is the same but in snake_case. They should not be listed explicitly, it would only add unnecessary noise.
+* Every arm in the TPG should generally be translated to a single abstraction relationship. Even if multiple arms of a single TPG nonterminal look almost identical, having the same amount and similar types of terminals and nonterminals, the corresponding PTAG should still have an explicit abstraction relationship for each.
+* An abstraction arm within an abstraction relationship has the abstract children on the LHS, and the resultant abstraction on the RHS.
+* If an arm's LHS and RHS are both the same singular abstraction, it can be written as just the abstraction; no need for LHS ⟶ RHS.
+* If an arm's LHS is empty, it should have `empty`. If the arm doesn't result in anything meaningful, it should have `empty` as the RHS.
+* A `*`, `+`, `?`, `{amount}` can be used to denote varying amounts of what it describes.
+
+### Building a PTAG
+
+Normally, in the same way that the abstraction is done backwards from the concrete parsing, abstraction relationships for nonterminals should be written starting from the last nonterminal in the TPG, and ending on the first nonterminal. This is because, in most cases, the creation of the nonterminals followed a logical process that implicitly describes a topological sorting. Since we care about defining abstraction relationships by the possible abstracted children of the nonterminal in question, we want to start from the end of the topological sorting and go up as much as possible.
+
+Writing the first few abstraction relationships will be simple. However, as you go further, you will have more and more possible arms for each relationship. Lets say you have a nonterminal `Foo` which abstracts to different things depending on the abstractions of `Bar` and `Baz`, and `Bar` and `Baz` each can abstract to 2 different results, `Foo` will have to define 4 abstraction arms, each of which could possibly have different results... So on so forth. In the worst case, this means that every subsequent nonterminal can abstract to an exponentially larger amount of results. If you're smart about it though, you can minimize this quite easily by having many arms yield the same result but with different values inside their fields.
 
 ### Example
 
 ```
-Comment: empty        ⟶ empty
-         string empty ⟶ comment
+Comment.1: empty
 ```
 
 ```
-HashPyramid: empty ⟶ empty
-             ...   ⟶ hash_pyramid
+Comment.2: string ⟶ comment
 ```
 
 ```
-StarPyramid: empty ⟶ empty
-             ...   ⟶ star_pyramid
+HashPyramid.1: empty
 ```
 
 ```
-HeadOfThePyramid: char empty (...a) ⟶ a
+HashPyramid.2: char+ comment empty  ⟶ hashes
+               char+ empty empty    ⟶ hashes
+               char+ comment hashes ⟶ hashes
+               char+ empty hashes   ⟶ hashes
+```
+
+```
+StarPyramid.1: empty
+```
+
+```
+StarPyramid.2: char+ comment empty ⟶ stars
+               char+ empty empty   ⟶ stars
+               char+ comment stars ⟶ stars
+               char+ empty stars   ⟶ stars
+```
+
+```
+HeadOfThePyramid.1: char stars ⟶ stars
+                    char empty ⟶ stars
+```
+
+```
+HeadOfThePyramid.2: char hashes ⟶ hashes
+                    char empty  ⟶ hashes
 ```
