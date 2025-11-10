@@ -119,9 +119,15 @@ impl Parser {
             // `col` goes up to AND INCLUDING `max_col` to account for the newline, which
             // is not included in the char slice.
             while col <= max_col {
-                col += lex
+                let curr_col = lex
                     .identify(&line_chars[col..])
                     .map_err(|e| ParseError::marked(&e, line, col))?;
+
+                if curr_col == 0 {
+                    // The lexer requested to skip the rest of the line
+                    break;
+                }
+                col += curr_col;
             }
         }
 

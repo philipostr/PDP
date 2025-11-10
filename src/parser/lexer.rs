@@ -13,6 +13,9 @@ trait StartsWithStr {
 
 impl StartsWithStr for &[char] {
     fn starts_with_str(&self, needle: &str) -> bool {
+        if needle.len() > self.len() {
+            return false
+        }
         self.iter().zip(needle.chars()).all(|(l, r)| l == &r)
     }
 }
@@ -57,7 +60,7 @@ impl Lexer {
         }
 
         // Start all lines with an INDENT token, even if the amount is 0
-        if self.next_start_col == 0 && !line.is_empty() && line[0] != ' ' {
+        if self.next_start_col == 0 && !line.is_empty() && line[0] != ' ' && !line.starts_with_str("#") {
             self.tokens.push(Token::INDENT(0, self.next_start_line, 0));
         }
 
@@ -129,6 +132,13 @@ impl Lexer {
                 self.next_start_col += num_spaces;
                 Ok(num_spaces)
             }
+        } else if line.starts_with_str("#") {
+            // Ignore the rest of the line and push a NEWLINE
+            self.tokens
+                .push(Token::NEWLINE(self.next_start_line, self.next_start_col));
+            self.next_start_col = 0;
+            self.next_start_line += 1;
+            Ok(0)
         } else if line.starts_with_str("if") && Self::word_boundary(line, 2) {
             self.tokens.push(Token::KEYWORD(
                 Keyword::If,

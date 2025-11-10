@@ -607,7 +607,8 @@ impl<N: ParseTreeNode> ParseTreeNode for Maybe<N> {
         token_stream: &mut TwoWayIterator<Token>,
         context: &Context,
     ) -> (usize, Result<ParseTokensRes<Self>, ParseError>) {
-        debug!("Maybe::parse() started");
+        let type_name = std::any::type_name::<N>();
+        debug!("Maybe::<{type_name}>::parse() started");
 
         let result = N::parse(token_stream, context);
         match result.1 {
