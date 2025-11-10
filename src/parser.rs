@@ -65,7 +65,11 @@ impl ParseError {
     pub fn marked(msg: &str, line: usize, col: usize) -> Self {
         let filename = FILENAME.get_or_init(|| "unset".to_string());
         let line_string = match LINES.get() {
-            Some(s) => &s[line],
+            Some(s) => if s.is_empty() {
+                    &"this should only exist for an error that gets thrown out".to_string()
+                } else {
+                    &s[line]
+                },
             None => return Self::general("Fatal error: lines were never set"),
         };
 
