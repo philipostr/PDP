@@ -203,6 +203,8 @@ Unit.6: empty ⟶ return_stmt
 ```
 Unit.7: name parameters block       ⟶ function_def
         name parameters return_stmt ⟶ function_def
+        name empty block            ⟶ function_def
+        name empty return_stmt      ⟶ function_def
 ```
 
 ```

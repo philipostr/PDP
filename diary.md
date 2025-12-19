@@ -1,3 +1,9 @@
+## Entry #6 (December 18, 2025) *Lexical parsing, shmexical parsing*
+
+Why did I not keep row-column data across the concrete-to-abstract barrier? That was so stupid... now error messages in symbol-table creation and beyond (including a minor thing called EXECUTION) will not be able to be marked. How smart of past me, truly. I'm probably going to end up ammending this abomonable lack of forethought as my next step.
+
+Anyway, onto the topic of this entry: lexical analysis and symbol tables. Boy... this is the first step in this project where I have legitimately needed to do some research. I know, I know, the whole point of this project was for me to make a Python interpreter from scratch, which includes all of the algorithms, design concepts, and the general pipeline of it all. However, for this one case, I did do some back-and-forths with ChatGPT to find out what in the hell symbol tables accomplish in such a flexible and dynamically-typed language like Python. Turns out, it will help with making the bytecode more specific, so that's cool. It also helps define closures and the variables that they borrow, which is not something that I had ever thought of in the Python world. The illumination on the differences between local, global, cell, and free variables was instrumental in making me not completely waste my time. So please, allow this betrayal just this once, my dear old pal.
+
 ## Entry #5 (November 9, 2025) *Mo' AST nodes, mo' problems*
 
 I have made a severe, and continuous, lapse in my judgement. Specifically, in my creation of the PTAG. I thought I could be all smart and lazy and say "hey, look at me, I can get away with not specifying the patterns I need!". I did, in fact, need to specify the patterns I needed. Or better yet, I didn't **need** to, but it would have saved me 86 of my seemingly 57.1 million years of an eternally suffering existence in building this project.

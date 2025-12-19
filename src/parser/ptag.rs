@@ -2,6 +2,49 @@
 
 use super::building_blocks::*;
 
+#[macro_export]
+macro_rules! identity_safe_ast {
+    () => {
+        crate::parser::ptag::AstNode::function_call { .. }
+            | crate::parser::ptag::AstNode::variable { .. }
+            | crate::parser::ptag::AstNode::list(..)
+            | crate::parser::ptag::AstNode::dictionary(..)
+            | crate::parser::ptag::AstNode::set(..)
+            | crate::parser::ptag::AstNode::string(..)
+            | crate::parser::ptag::AstNode::number(..)
+            | crate::parser::ptag::AstNode::boolean(..)
+    };
+}
+
+#[macro_export]
+macro_rules! non_identity_ast {
+    () => {
+        AstNode::op(_)
+            | AstNode::asop(_)
+            | AstNode::keyword(_)
+            | AstNode::name(_)
+            | AstNode::bracket(_)
+            | AstNode::misc(_)
+            | AstNode::multiple(_)
+            | AstNode::access(_)
+            | AstNode::arguments(_)
+            | AstNode::assign_op { .. }
+            | AstNode::assign_op_rhs { .. }
+            | AstNode::binary_op_rhs { .. }
+            | AstNode::block(_)
+            | AstNode::r#break
+            | AstNode::r#continue
+            | AstNode::empty
+            | AstNode::expr(_)
+            | AstNode::for_loop { .. }
+            | AstNode::function_def { .. }
+            | AstNode::if_stmt { .. }
+            | AstNode::parameters(_)
+            | AstNode::return_stmt(_)
+            | AstNode::while_loop { .. }
+    };
+}
+
 #[derive(Debug)]
 pub enum OperationTree {
     Unary {
@@ -312,14 +355,7 @@ impl AstNode {
         Self::binary_op_rhs {
             operation: tuplify!(first, op),
             rhs: match second {
-                Self::function_call { .. }
-                | Self::variable { .. }
-                | Self::list(..)
-                | Self::dictionary(..)
-                | Self::set(..)
-                | Self::string(..)
-                | Self::number(..)
-                | Self::boolean(..) => Box::new(OperationTree::Identity(second)),
+                identity_safe_ast!() => Box::new(OperationTree::Identity(second)),
                 Self::expr(op_tree) => op_tree,
                 bad => panic!("Tried calling from_expr_binary() with {bad:?}"),
             },
@@ -341,14 +377,7 @@ impl AstNode {
         Self::expr(Box::new(OperationTree::Unary {
             operation: Op::Minus,
             value: match first {
-                Self::function_call { .. }
-                | Self::variable { .. }
-                | Self::list(..)
-                | Self::dictionary(..)
-                | Self::set(..)
-                | Self::string(..)
-                | Self::number(..)
-                | Self::boolean(..) => Box::new(OperationTree::Identity(first)),
+                identity_safe_ast!() => Box::new(OperationTree::Identity(first)),
                 Self::expr(op_tree) => op_tree,
                 bad => panic!("Tried calling from_expr_unary_1() with {bad:?}"),
             },
@@ -370,14 +399,7 @@ impl AstNode {
         Self::expr(Box::new(OperationTree::Unary {
             operation: Op::Not,
             value: match first {
-                Self::function_call { .. }
-                | Self::variable { .. }
-                | Self::list(..)
-                | Self::dictionary(..)
-                | Self::set(..)
-                | Self::string(..)
-                | Self::number(..)
-                | Self::boolean(..) => Box::new(OperationTree::Identity(first)),
+                identity_safe_ast!() => Box::new(OperationTree::Identity(first)),
                 Self::expr(op_tree) => op_tree,
                 bad => panic!("Tried calling from_expr_unary_2() with {bad:?}"),
             },
@@ -397,14 +419,7 @@ impl AstNode {
     /// ```
     pub fn from_expr_unary_3(first: Self) -> Self {
         Self::expr(match first {
-            Self::function_call { .. }
-            | Self::variable { .. }
-            | Self::list(..)
-            | Self::dictionary(..)
-            | Self::set(..)
-            | Self::string(..)
-            | Self::number(..)
-            | Self::boolean(..) => Box::new(OperationTree::Identity(first)),
+            identity_safe_ast!() => Box::new(OperationTree::Identity(first)),
             Self::expr(op_tree) => op_tree,
             bad => panic!("Tried calling from_expr_unary_3() with {bad:?}"),
         })
@@ -443,27 +458,13 @@ impl AstNode {
 
         Self::expr(if chain.is_empty() {
             match first {
-                Self::function_call { .. }
-                | Self::variable { .. }
-                | Self::list(..)
-                | Self::dictionary(..)
-                | Self::set(..)
-                | Self::string(..)
-                | Self::number(..)
-                | Self::boolean(..) => Box::new(OperationTree::Identity(first)),
+                identity_safe_ast!() => Box::new(OperationTree::Identity(first)),
                 Self::expr(op_tree) => op_tree,
                 bad => panic!("Tried calling from_expr() with {bad:?}"),
             }
         } else {
             let root_value = match first {
-                Self::function_call { .. }
-                | Self::variable { .. }
-                | Self::list(..)
-                | Self::dictionary(..)
-                | Self::set(..)
-                | Self::string(..)
-                | Self::number(..)
-                | Self::boolean(..) => OperationTree::Identity(first),
+                identity_safe_ast!() => OperationTree::Identity(first),
                 Self::expr(op_tree) => *op_tree,
                 bad => panic!("Tried calling from_expr() with {bad:?}"),
             };
@@ -616,7 +617,11 @@ impl AstNode {
     pub fn from_unit_7(first: Self, second: Self, third: Self) -> Self {
         Self::function_def {
             identifier: tuplify!(first, name),
-            parameters: tuplify!(second, parameters),
+            parameters: match second {
+                Self::parameters(params) => params,
+                Self::empty => Vec::new(),
+                bad => panic!("Tried calling from_unit_7() with {bad:?}"),
+            },
             body: Box::new(third),
         }
     }

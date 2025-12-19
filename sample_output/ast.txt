@@ -1,0 +1,135 @@
+block(
+    [
+        assign_op {
+            variable: "x",
+            accesses: [],
+            asop: Assign,
+            value: Identity(
+                number(
+                    10.0,
+                ),
+            ),
+        },
+        empty,
+        function_def {
+            identifier: "outer",
+            parameters: [
+                "n",
+            ],
+            body: block(
+                [
+                    assign_op {
+                        variable: "total",
+                        accesses: [],
+                        asop: Assign,
+                        value: Identity(
+                            number(
+                                0.0,
+                            ),
+                        ),
+                    },
+                    empty,
+                    function_def {
+                        identifier: "inner",
+                        parameters: [
+                            "i",
+                        ],
+                        body: block(
+                            [
+                                return_stmt(
+                                    Some(
+                                        Binary {
+                                            operation: Div,
+                                            left: Binary {
+                                                operation: Plus,
+                                                left: Identity(
+                                                    variable {
+                                                        identifier: "i",
+                                                        accesses: [],
+                                                    },
+                                                ),
+                                                right: Identity(
+                                                    variable {
+                                                        identifier: "n",
+                                                        accesses: [],
+                                                    },
+                                                ),
+                                            },
+                                            right: Identity(
+                                                variable {
+                                                    identifier: "x",
+                                                    accesses: [],
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                ),
+                                empty,
+                            ],
+                        ),
+                    },
+                    for_loop {
+                        loop_variable: "i",
+                        iterator: Identity(
+                            function_call {
+                                function: "range",
+                                arguments: [
+                                    Identity(
+                                        variable {
+                                            identifier: "n",
+                                            accesses: [],
+                                        },
+                                    ),
+                                ],
+                            },
+                        ),
+                        body: block(
+                            [
+                                assign_op {
+                                    variable: "total",
+                                    accesses: [],
+                                    asop: AddAssign,
+                                    value: Identity(
+                                        function_call {
+                                            function: "inner",
+                                            arguments: [
+                                                Identity(
+                                                    variable {
+                                                        identifier: "i",
+                                                        accesses: [],
+                                                    },
+                                                ),
+                                            ],
+                                        },
+                                    ),
+                                },
+                                empty,
+                            ],
+                        ),
+                    },
+                    return_stmt(
+                        Some(
+                            Identity(
+                                variable {
+                                    identifier: "total",
+                                    accesses: [],
+                                },
+                            ),
+                        ),
+                    ),
+                    empty,
+                ],
+            ),
+        },
+        function_call {
+            function: "outer",
+            arguments: [
+                Identity(
+                    number(
+                        5.0,
+                    ),
+                ),
+            ],
+        },
+    ],
+)

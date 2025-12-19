@@ -14,7 +14,7 @@ trait StartsWithStr {
 impl StartsWithStr for &[char] {
     fn starts_with_str(&self, needle: &str) -> bool {
         if needle.len() > self.len() {
-            return false
+            return false;
         }
         self.iter().zip(needle.chars()).all(|(l, r)| l == &r)
     }
@@ -60,7 +60,11 @@ impl Lexer {
         }
 
         // Start all lines with an INDENT token, even if the amount is 0
-        if self.next_start_col == 0 && !line.is_empty() && line[0] != ' ' && !line.starts_with_str("#") {
+        if self.next_start_col == 0
+            && !line.is_empty()
+            && line[0] != ' '
+            && !line.starts_with_str("#")
+        {
             self.tokens.push(Token::INDENT(0, self.next_start_line, 0));
         }
 
@@ -682,7 +686,7 @@ mod tests {
         assert!(haystack.starts_with_str("h"));
         assert!(haystack.starts_with_str("hello"));
         assert!(!haystack.starts_with_str("ello"));
-        assert!(haystack.starts_with_str("hello world"));
+        assert!(!haystack.starts_with_str("hello world"));
     }
 
     #[test]

@@ -1,5 +1,7 @@
 # PDP
-Poorly Designed Python. I try to (badly) build a Python-like interpreter from scratch in Rust
+Poorly Designed Python. I try to (badly) build a Python-like interpreter from scratch in Rust.
+
+The outputs of a sample run from the latest `pdp` version can be found in [`sample_output/`](https://github.com/philipostr/PDP/tree/main/sample_output).
 
 ## Documentation
 
@@ -29,3 +31,4 @@ The following files will be created under the `pdp_out/` directory:
 - `token_stream.txt`: A pretty-print of the token-stream that was taken from the Python code.
 - `parse_tree.txt`: A pretty-print of the concrete parse tree that was constructed from the token stream.
 - `ast.txt`: A pretty-print of the abstract syntax tree that was extracted from the parse tree.
+- `symbol_table.txt`: A pretty-print of the symbol table that was built up from the AST.

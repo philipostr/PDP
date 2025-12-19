@@ -1,6 +1,7 @@
-mod building_blocks;
+pub mod building_blocks;
 mod lexer;
-mod ptag;
+pub mod ptag;
+pub mod symbol_table;
 mod tpg;
 
 use std::{fmt::Display, fs, sync::OnceLock};
@@ -65,11 +66,13 @@ impl ParseError {
     pub fn marked(msg: &str, line: usize, col: usize) -> Self {
         let filename = FILENAME.get_or_init(|| "unset".to_string());
         let line_string = match LINES.get() {
-            Some(s) => if s.is_empty() {
+            Some(s) => {
+                if s.is_empty() {
                     &"this should only exist for an error that gets thrown out".to_string()
                 } else {
                     &s[line]
-                },
+                }
+            }
             None => return Self::general("Fatal error: lines were never set"),
         };
 
@@ -155,6 +158,16 @@ impl Parser {
         ) {
             eprintln!("Warning: couldn't output AST: {e:?}");
             eprintln!("couldn't output AST: {e:?}");
+        }
+
+        info!("Building symbol tables");
+        let symbol_table = symbol_table::SymbolTable::from_root_ast(&parse_results.ast_node)?;
+        if let Err(e) = fs::write(
+            "pdp_out/symbol_table.txt",
+            format!("{symbol_table:#?}").as_bytes(),
+        ) {
+            eprintln!("Warning: couldn't output symbol table: {e:?}");
+            warn!("couldn't output symbol table: {e:?}");
         }
 
         Ok(())

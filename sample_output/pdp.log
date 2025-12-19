@@ -1,0 +1,298 @@
+[INFO  src\parser.rs:110] Producing token stream
+[INFO  src\parser.rs:148] Generating concrete parse tree and AST
+[DEBUG src\parser\tpg.rs:475] parse_tokens() started
+[DEBUG src\parser\tpg.rs:644] ProgramNode::parse() started
+[TRACE src\parser\tpg.rs:671] [ProgramNode::parse()] Started Scoped* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ScopedNode>::parse() started
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{0} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:1022] [UnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1209] SideEffectNode::parse() started
+[TRACE src\parser\tpg.rs:1248] [SideEffectNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (ASOP(Assign, 0, 2) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1498] [ExprUnitNode::parse()] Started NUMBER arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (NEWLINE(0, 6))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:716] [ScopedNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{0} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:966] [UnitNode::parse()] Started KEYWORD(Def) arm
+[DEBUG src\parser\tpg.rs:611] Maybe::<PDP::parser::tpg::ParamsNode>::parse() started
+[DEBUG src\parser\tpg.rs:1746] ParamsNode::parse() started
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ParamsTailNode>::parse() started
+[DEBUG src\parser\tpg.rs:1779] ParamsTailNode::parse() started
+[TRACE src\parser\tpg.rs:1784] expected a `,` (BRACKET(')', 2, 11) != Token::MISC(',', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ParamsTailNode>::parse()] Matched 0 nodes
+[TRACE src\parser\tpg.rs:616] [Maybe::parse()] Did match node
+[DEBUG src\parser\tpg.rs:1135] BodyNode::parse() started
+[TRACE src\parser\tpg.rs:1152] [BodyNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:548] Plus::<PDP::parser::tpg::ScopedNode>::parse() started
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{1} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:1022] [UnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1209] SideEffectNode::parse() started
+[TRACE src\parser\tpg.rs:1248] [SideEffectNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (ASOP(Assign, 3, 10) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1498] [ExprUnitNode::parse()] Started NUMBER arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (NEWLINE(3, 13))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:716] [ScopedNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{1} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:966] [UnitNode::parse()] Started KEYWORD(Def) arm
+[DEBUG src\parser\tpg.rs:611] Maybe::<PDP::parser::tpg::ParamsNode>::parse() started
+[DEBUG src\parser\tpg.rs:1746] ParamsNode::parse() started
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ParamsTailNode>::parse() started
+[DEBUG src\parser\tpg.rs:1779] ParamsTailNode::parse() started
+[TRACE src\parser\tpg.rs:1784] expected a `,` (BRACKET(')', 5, 15) != Token::MISC(',', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ParamsTailNode>::parse()] Matched 0 nodes
+[TRACE src\parser\tpg.rs:616] [Maybe::parse()] Did match node
+[DEBUG src\parser\tpg.rs:1135] BodyNode::parse() started
+[TRACE src\parser\tpg.rs:1152] [BodyNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:548] Plus::<PDP::parser::tpg::ScopedNode>::parse() started
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{2} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:944] [UnitNode::parse()] Started KEYWORD(Return) arm
+[DEBUG src\parser\tpg.rs:611] Maybe::<PDP::parser::tpg::ExprNode>::parse() started
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1624] [NameExprNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (OP(Plus, 6, 17) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1624] [NameExprNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (OP(Div, 6, 21) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1624] [NameExprNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (NEWLINE(6, 24) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (NEWLINE(6, 24))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 2 nodes
+[TRACE src\parser\tpg.rs:616] [Maybe::parse()] Did match node
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:716] [ScopedNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{2} arm
+[TRACE src\parser\tpg.rs:746] [ScopedNode::parse()] Too few indentations, 2 expected
+[TRACE src\parser\tpg.rs:587] [Plus::<PDP::parser::tpg::ScopedNode>::parse()] Matched 2 nodes
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{1} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:859] [UnitNode::parse()] Started KEYWORD(For) arm
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1602] [NameExprNode::parse()] Started BRACKET('(') arm
+[DEBUG src\parser\tpg.rs:611] Maybe::<PDP::parser::tpg::ListNode>::parse() started
+[DEBUG src\parser\tpg.rs:1691] ListNode::parse() started
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1624] [NameExprNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (BRACKET(')', 8, 20) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (BRACKET(')', 8, 20))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ListTailNode>::parse() started
+[DEBUG src\parser\tpg.rs:1716] ListTailNode::parse() started
+[TRACE src\parser\tpg.rs:1721] expected a `,` (BRACKET(')', 8, 20) != Token::MISC(',', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ListTailNode>::parse()] Matched 0 nodes
+[TRACE src\parser\tpg.rs:616] [Maybe::parse()] Did match node
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (MISC(':', 8, 21))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:1065] ResultNode::parse() started
+[TRACE src\parser\tpg.rs:1082] [ResultNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:548] Plus::<PDP::parser::tpg::ScopedNode>::parse() started
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{2} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:1022] [UnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1209] SideEffectNode::parse() started
+[TRACE src\parser\tpg.rs:1248] [SideEffectNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (ASOP(AddAssign, 9, 14) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1602] [NameExprNode::parse()] Started BRACKET('(') arm
+[DEBUG src\parser\tpg.rs:611] Maybe::<PDP::parser::tpg::ListNode>::parse() started
+[DEBUG src\parser\tpg.rs:1691] ListNode::parse() started
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1624] [NameExprNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (BRACKET(')', 9, 24) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (BRACKET(')', 9, 24))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ListTailNode>::parse() started
+[DEBUG src\parser\tpg.rs:1716] ListTailNode::parse() started
+[TRACE src\parser\tpg.rs:1721] expected a `,` (BRACKET(')', 9, 24) != Token::MISC(',', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ListTailNode>::parse()] Matched 0 nodes
+[TRACE src\parser\tpg.rs:616] [Maybe::parse()] Did match node
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (NEWLINE(9, 25))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:716] [ScopedNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{2} arm
+[TRACE src\parser\tpg.rs:746] [ScopedNode::parse()] Too few indentations, 2 expected
+[TRACE src\parser\tpg.rs:587] [Plus::<PDP::parser::tpg::ScopedNode>::parse()] Matched 2 nodes
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{1} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:944] [UnitNode::parse()] Started KEYWORD(Return) arm
+[DEBUG src\parser\tpg.rs:611] Maybe::<PDP::parser::tpg::ExprNode>::parse() started
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1399] [ExprUnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1585] NameExprNode::parse() started
+[TRACE src\parser\tpg.rs:1624] [NameExprNode::parse()] Started Index* arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::IndexNode>::parse() started
+[DEBUG src\parser\tpg.rs:1907] IndexNode::parse() started
+[TRACE src\parser\tpg.rs:1912] expected a `[` (NEWLINE(11, 16) != Token::BRACKET('[', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::IndexNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (NEWLINE(11, 16))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[TRACE src\parser\tpg.rs:616] [Maybe::parse()] Did match node
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:716] [ScopedNode::parse()] Started NEWLINE arm
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{1} arm
+[TRACE src\parser\tpg.rs:746] [ScopedNode::parse()] Too few indentations, 1 expected
+[TRACE src\parser\tpg.rs:587] [Plus::<PDP::parser::tpg::ScopedNode>::parse()] Matched 6 nodes
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:726] [ScopedNode::parse()] Started INDENT{0} arm
+[DEBUG src\parser\tpg.rs:789] UnitNode::parse() started
+[TRACE src\parser\tpg.rs:1022] [UnitNode::parse()] Started NAME arm
+[DEBUG src\parser\tpg.rs:1209] SideEffectNode::parse() started
+[TRACE src\parser\tpg.rs:1226] [SideEffectNode::parse()] Started BRACKET('(') arm
+[DEBUG src\parser\tpg.rs:611] Maybe::<PDP::parser::tpg::ListNode>::parse() started
+[DEBUG src\parser\tpg.rs:1691] ListNode::parse() started
+[DEBUG src\parser\tpg.rs:1286] ExprNode::parse() started
+[DEBUG src\parser\tpg.rs:1312] ExprUnaryNode::parse() started
+[TRACE src\parser\tpg.rs:1357] [ExprUnaryNode::parse()] Started ExprUnit arm
+[DEBUG src\parser\tpg.rs:1382] ExprUnitNode::parse() started
+[TRACE src\parser\tpg.rs:1498] [ExprUnitNode::parse()] Started NUMBER arm
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ExprBinaryNode>::parse() started
+[DEBUG src\parser\tpg.rs:1543] ExprBinaryNode::parse() started
+[TRACE src\parser\tpg.rs:1548] [OpTokenNode::parse()] expected a binary operator (BRACKET(')', 13, 7))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ExprBinaryNode>::parse()] Matched 0 nodes
+[DEBUG src\parser\tpg.rs:491] Star::<PDP::parser::tpg::ListTailNode>::parse() started
+[DEBUG src\parser\tpg.rs:1716] ListTailNode::parse() started
+[TRACE src\parser\tpg.rs:1721] expected a `,` (BRACKET(')', 13, 7) != Token::MISC(',', _, _))
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ListTailNode>::parse()] Matched 0 nodes
+[TRACE src\parser\tpg.rs:616] [Maybe::parse()] Did match node
+[DEBUG src\parser\tpg.rs:699] ScopedNode::parse() started
+[TRACE src\parser\tpg.rs:774] [ScopedNode::parse()] Unexpected token END
+[TRACE src\parser\tpg.rs:523] [Star::<PDP::parser::tpg::ScopedNode>::parse()] Matched 4 nodes
+[INFO  src\parser.rs:165] Building symbol tables
+[DEBUG src\parser\symbol_table.rs:71] SymbolTable::from_scope_ast() started
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:225] Called find_vars_ast() on an assign_op
+[TRACE src\parser\symbol_table.rs:288] Called find_vars_ast() on a number
+[TRACE src\parser\symbol_table.rs:164] Called find_vars_ast() on an empty
+[TRACE src\parser\symbol_table.rs:205] Called find_vars_ast() on a function_def
+[TRACE src\parser\symbol_table.rs:213] Called find_vars_ast() on a function_call
+[TRACE src\parser\symbol_table.rs:288] Called find_vars_ast() on a number
+[DEBUG src\parser\symbol_table.rs:71] SymbolTable::from_scope_ast() started
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:225] Called find_vars_ast() on an assign_op
+[TRACE src\parser\symbol_table.rs:288] Called find_vars_ast() on a number
+[TRACE src\parser\symbol_table.rs:164] Called find_vars_ast() on an empty
+[TRACE src\parser\symbol_table.rs:205] Called find_vars_ast() on a function_def
+[TRACE src\parser\symbol_table.rs:187] Called find_vars_ast() on a for_loop
+[TRACE src\parser\symbol_table.rs:213] Called find_vars_ast() on a function_call
+[TRACE src\parser\symbol_table.rs:259] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:225] Called find_vars_ast() on an assign_op
+[TRACE src\parser\symbol_table.rs:213] Called find_vars_ast() on a function_call
+[TRACE src\parser\symbol_table.rs:259] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:164] Called find_vars_ast() on an empty
+[TRACE src\parser\symbol_table.rs:199] Called find_vars_ast() on a return_stmt
+[TRACE src\parser\symbol_table.rs:259] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:164] Called find_vars_ast() on an empty
+[DEBUG src\parser\symbol_table.rs:71] SymbolTable::from_scope_ast() started
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:199] Called find_vars_ast() on a return_stmt
+[TRACE src\parser\symbol_table.rs:259] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:259] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:259] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:164] Called find_vars_ast() on an empty
+[DEBUG src\parser\symbol_table.rs:126] SymbolTable::from_scope_ast() ended
+[DEBUG src\parser\symbol_table.rs:126] SymbolTable::from_scope_ast() ended
+[DEBUG src\parser\symbol_table.rs:126] SymbolTable::from_scope_ast() ended

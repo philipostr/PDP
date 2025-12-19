@@ -1,0 +1,40 @@
+SymbolTable {
+    local_vars: [],
+    cell_vars: [],
+    free_vars: [],
+    global_accesses: [
+        "outer",
+        "x",
+    ],
+    children: [
+        SymbolTable {
+            local_vars: [
+                "inner",
+                "total",
+                "i",
+            ],
+            cell_vars: [
+                "n",
+            ],
+            free_vars: [],
+            global_accesses: [
+                "range",
+            ],
+            children: [
+                SymbolTable {
+                    local_vars: [
+                        "i",
+                    ],
+                    cell_vars: [],
+                    free_vars: [
+                        "n",
+                    ],
+                    global_accesses: [
+                        "x",
+                    ],
+                    children: [],
+                },
+            ],
+        },
+    ],
+}
