@@ -733,7 +733,8 @@ impl ParseTreeNode for ProgramNode {
                     match_meta_node!(ScopedNode, Star, token_stream, context, advanced);
 
                 /* `END` */
-                match_token!(Token::END, "unexpected token", token_stream, advanced);
+                // Error message is based on what a `Scoped` can start with
+                match_token!(Token::END, "unexpected indentation", token_stream, advanced);
 
                 (
                     advanced,
@@ -827,13 +828,15 @@ impl ParseTreeNode for ScopedNode {
                     )),
                 )
             }
+            // IMPORTANT: If any new tokens are added here, audit to see if they should be added to the "unexpected token"
+            // error message in `ProgramNode::parse()`.
             _ => {
                 let (line, col) = first.line_and_col();
 
                 trace!("[ScopedNode::parse()] Unexpected token {first:?}");
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token", line, col)),
+                    Err(ParseError::marked("unexpected token, expected: newline, indentation", line, col)),
                 )
             }
         }
@@ -1117,7 +1120,7 @@ impl ParseTreeNode for UnitNode {
                 trace!("[UnitNode::parse()] Unexpected token {first:?}");
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token", line, col)),
+                    Err(ParseError::marked("unexpected token, expected: `if`, `while`, `for`, `continue`, `break`, `def`, name", line, col)),
                 )
             }
         }
@@ -1187,7 +1190,7 @@ impl ParseTreeNode for ResultNode {
 
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token", line, col)),
+                    Err(ParseError::marked("unexpected token, expected: newline, name", line, col)),
                 )
             }
         }
@@ -1261,7 +1264,7 @@ impl ParseTreeNode for BodyNode {
 
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token", line, col)),
+                    Err(ParseError::marked("unexpected token, expected: newline, `return`", line, col)),
                 )
             }
         }
@@ -1595,7 +1598,7 @@ impl ParseTreeNode for ExprUnitNode {
 
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token", line, col)),
+                    Err(ParseError::marked("unexpected token, expected: name, `(`, `[`, `{`, string, number, boolean", line, col)),
                 )
             }
         }
