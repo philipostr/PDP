@@ -3,6 +3,7 @@
 use log::{debug, error, trace};
 use std::fmt::Debug;
 
+use super::markers::*;
 use super::{ParseError, building_blocks::*};
 use crate::{parser::ptag::AstNode, util::two_way_iterator::TwoWayIterator};
 
@@ -57,8 +58,12 @@ impl OpTokenNode {
         }
     }
 
-    pub fn as_ast(&self) -> AstNode {
-        AstNode::op(self.0.clone())
+    pub fn as_ast(&self) -> MarkedAstNode {
+        let mark = Marker {
+            row: self.1,
+            col: self.2,
+        };
+        MarkedAstNode::new(AstNode::op(MarkedOp::new(self.0.clone(), mark)), mark)
     }
 }
 
@@ -72,8 +77,12 @@ impl AsopTokenNode {
         }
     }
 
-    pub fn as_ast(&self) -> AstNode {
-        AstNode::asop(self.0.clone())
+    pub fn as_ast(&self) -> MarkedAstNode {
+        let mark = Marker {
+            row: self.1,
+            col: self.2,
+        };
+        MarkedAstNode::new(AstNode::asop(MarkedAsop::new(self.0.clone(), mark)), mark)
     }
 }
 
@@ -87,8 +96,15 @@ impl KeywordTokenNode {
         }
     }
 
-    pub fn as_ast(&self) -> AstNode {
-        AstNode::keyword(self.0.clone())
+    pub fn as_ast(&self) -> MarkedAstNode {
+        let mark = Marker {
+            row: self.1,
+            col: self.2,
+        };
+        MarkedAstNode::new(
+            AstNode::keyword(MarkedKeyword::new(self.0.clone(), mark)),
+            mark,
+        )
     }
 }
 
@@ -102,8 +118,12 @@ impl NameTokenNode {
         }
     }
 
-    pub fn as_ast(&self) -> AstNode {
-        AstNode::name(self.0.clone())
+    pub fn as_ast(&self) -> MarkedAstNode {
+        let mark = Marker {
+            row: self.1,
+            col: self.2,
+        };
+        MarkedAstNode::new(AstNode::name(MarkedString::new(self.0.clone(), mark)), mark)
     }
 }
 
@@ -117,8 +137,15 @@ impl StringTokenNode {
         }
     }
 
-    pub fn as_ast(&self) -> AstNode {
-        AstNode::string(self.0.clone())
+    pub fn as_ast(&self) -> MarkedAstNode {
+        let mark = Marker {
+            row: self.1,
+            col: self.2,
+        };
+        MarkedAstNode::new(
+            AstNode::string(MarkedString::new(self.0.clone(), mark)),
+            mark,
+        )
     }
 }
 
@@ -132,8 +159,12 @@ impl NumberTokenNode {
         }
     }
 
-    pub fn as_ast(&self) -> AstNode {
-        AstNode::number(self.0)
+    pub fn as_ast(&self) -> MarkedAstNode {
+        let mark = Marker {
+            row: self.1,
+            col: self.2,
+        };
+        MarkedAstNode::new(AstNode::number(MarkedNumber::new(self.0, mark)), mark)
     }
 }
 
@@ -147,8 +178,12 @@ impl BoolTokenNode {
         }
     }
 
-    pub fn as_ast(&self) -> AstNode {
-        AstNode::boolean(self.0)
+    pub fn as_ast(&self) -> MarkedAstNode {
+        let mark = Marker {
+            row: self.1,
+            col: self.2,
+        };
+        MarkedAstNode::new(AstNode::boolean(MarkedBoolean::new(self.0, mark)), mark)
     }
 }
 
@@ -459,11 +494,11 @@ macro_rules! match_token {
 
 pub struct ParseTokensRes<N: ParseTreeNode> {
     pub parse_node: N,
-    pub ast_node: AstNode,
+    pub ast_node: MarkedAstNode,
 }
 
 impl<N: ParseTreeNode> ParseTokensRes<N> {
-    pub fn new(parse_node: N, ast_node: AstNode) -> Self {
+    pub fn new(parse_node: N, ast_node: MarkedAstNode) -> Self {
         ParseTokensRes {
             parse_node,
             ast_node,
@@ -524,11 +559,17 @@ impl<N: ParseTreeNode> ParseTreeNode for Star<N> {
             "[Star::<{type_name}>::parse()] Matched {} nodes",
             parse_group.len()
         );
+        let mark = if let Some(result) = ast_group.first() {
+            result.mark
+        } else {
+            // The marker obviously doesn't matter if nothing was matched, because there's nothing to mark
+            Marker::default()
+        };
         (
             advanced,
             Ok(ParseTokensRes::new(
                 Self(parse_group),
-                AstNode::multiple(ast_group),
+                MarkedAstNode::new(AstNode::multiple(ast_group), mark),
             )),
         )
     }
@@ -588,11 +629,17 @@ impl<N: ParseTreeNode> ParseTreeNode for Plus<N> {
             "[Plus::<{type_name}>::parse()] Matched {} nodes",
             parse_group.len()
         );
+        let mark = if let Some(result) = ast_group.first() {
+            result.mark
+        } else {
+            // The marker obviously doesn't matter if nothing was matched, because there's nothing to mark
+            Marker::default()
+        };
         (
             advanced,
             Ok(ParseTokensRes::new(
                 Self(parse_group),
-                AstNode::multiple(ast_group),
+                MarkedAstNode::new(AstNode::multiple(ast_group), mark),
             )),
         )
     }
@@ -630,7 +677,13 @@ impl<N: ParseTreeNode> ParseTreeNode for Maybe<N> {
                 }
 
                 trace!("[Maybe::parse()] Did not match node");
-                (0, Ok(ParseTokensRes::new(Self(None), AstNode::empty)))
+                (
+                    0,
+                    Ok(ParseTokensRes::new(
+                        Self(None),
+                        MarkedAstNode::new(AstNode::empty, Marker::default()),
+                    )),
+                )
             }
         }
     }
@@ -663,7 +716,10 @@ impl ParseTreeNode for ProgramNode {
                     advanced,
                     Ok(ParseTokensRes::new(
                         Self::None,
-                        AstNode::from_program_1(AstNode::empty),
+                        AstNode::from_program_1(MarkedAstNode::new(
+                            AstNode::empty,
+                            Marker::default(),
+                        )),
                     )),
                 )
             }
@@ -718,7 +774,10 @@ impl ParseTreeNode for ScopedNode {
                     advanced,
                     Ok(ParseTokensRes::new(
                         Self::None,
-                        AstNode::from_scoped_1(AstNode::empty),
+                        AstNode::from_scoped_1(MarkedAstNode::new(
+                            AstNode::empty,
+                            Marker::default(),
+                        )),
                     )),
                 )
             }
@@ -902,7 +961,7 @@ impl ParseTreeNode for UnitNode {
                     )),
                 )
             }
-            Token::KEYWORD(Keyword::Continue, _, _) if context.in_loop => {
+            Token::KEYWORD(Keyword::Continue, row, col) if context.in_loop => {
                 trace!("[UnitNode::parse()] Started KEYWORD(Continue) arm");
 
                 /* `NEWLINE` */
@@ -913,15 +972,19 @@ impl ParseTreeNode for UnitNode {
                     advanced
                 );
 
+                let mark = Marker {
+                    row: *row,
+                    col: *col,
+                };
                 (
                     advanced,
                     Ok(ParseTokensRes::new(
                         Self::Continue,
-                        AstNode::from_unit_4(AstNode::r#continue),
+                        AstNode::from_unit_4(MarkedAstNode::new(AstNode::r#continue, mark)),
                     )),
                 )
             }
-            Token::KEYWORD(Keyword::Break, _, _) if context.in_loop => {
+            Token::KEYWORD(Keyword::Break, row, col) if context.in_loop => {
                 trace!("[UnitNode::parse()] Started KEYWORD(Break) arm");
 
                 /* `NEWLINE` */
@@ -932,11 +995,15 @@ impl ParseTreeNode for UnitNode {
                     advanced
                 );
 
+                let mark = Marker {
+                    row: *row,
+                    col: *col,
+                };
                 (
                     advanced,
                     Ok(ParseTokensRes::new(
                         Self::Break,
-                        AstNode::from_unit_5(AstNode::r#break),
+                        AstNode::from_unit_5(MarkedAstNode::new(AstNode::r#break, mark)),
                     )),
                 )
             }

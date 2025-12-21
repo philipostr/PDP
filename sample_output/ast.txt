@@ -1,135 +1,537 @@
-block(
-    [
-        assign_op {
-            variable: "x",
-            accesses: [],
-            asop: Assign,
-            value: Identity(
-                number(
-                    10.0,
-                ),
-            ),
-        },
-        empty,
-        function_def {
-            identifier: "outer",
-            parameters: [
-                "n",
-            ],
-            body: block(
-                [
-                    assign_op {
-                        variable: "total",
-                        accesses: [],
-                        asop: Assign,
-                        value: Identity(
-                            number(
-                                0.0,
-                            ),
-                        ),
+MarkedComponent {
+    comp: block(
+        [
+            MarkedComponent {
+                comp: assign_op {
+                    variable: MarkedComponent {
+                        comp: "x",
+                        mark: Marker {
+                            row: 0,
+                            col: 0,
+                        },
                     },
-                    empty,
-                    function_def {
-                        identifier: "inner",
-                        parameters: [
-                            "i",
-                        ],
-                        body: block(
-                            [
-                                return_stmt(
-                                    Some(
-                                        Binary {
-                                            operation: Div,
-                                            left: Binary {
-                                                operation: Plus,
-                                                left: Identity(
-                                                    variable {
-                                                        identifier: "i",
-                                                        accesses: [],
-                                                    },
-                                                ),
-                                                right: Identity(
-                                                    variable {
-                                                        identifier: "n",
-                                                        accesses: [],
-                                                    },
-                                                ),
-                                            },
-                                            right: Identity(
-                                                variable {
-                                                    identifier: "x",
-                                                    accesses: [],
-                                                },
-                                            ),
+                    accesses: [],
+                    asop: MarkedComponent {
+                        comp: Assign,
+                        mark: Marker {
+                            row: 0,
+                            col: 2,
+                        },
+                    },
+                    value: MarkedComponent {
+                        comp: Identity(
+                            MarkedComponent {
+                                comp: number(
+                                    MarkedComponent {
+                                        comp: 10.0,
+                                        mark: Marker {
+                                            row: 0,
+                                            col: 4,
                                         },
-                                    ),
+                                    },
                                 ),
-                                empty,
-                            ],
-                        ),
-                    },
-                    for_loop {
-                        loop_variable: "i",
-                        iterator: Identity(
-                            function_call {
-                                function: "range",
-                                arguments: [
-                                    Identity(
-                                        variable {
-                                            identifier: "n",
-                                            accesses: [],
-                                        },
-                                    ),
-                                ],
+                                mark: Marker {
+                                    row: 0,
+                                    col: 4,
+                                },
                             },
                         ),
-                        body: block(
+                        mark: Marker {
+                            row: 0,
+                            col: 4,
+                        },
+                    },
+                },
+                mark: Marker {
+                    row: 0,
+                    col: 0,
+                },
+            },
+            MarkedComponent {
+                comp: empty,
+                mark: Marker {
+                    row: 0,
+                    col: 0,
+                },
+            },
+            MarkedComponent {
+                comp: function_def {
+                    identifier: MarkedComponent {
+                        comp: "outer",
+                        mark: Marker {
+                            row: 2,
+                            col: 4,
+                        },
+                    },
+                    parameters: [
+                        MarkedComponent {
+                            comp: "n",
+                            mark: Marker {
+                                row: 2,
+                                col: 10,
+                            },
+                        },
+                    ],
+                    body: MarkedComponent {
+                        comp: block(
                             [
-                                assign_op {
-                                    variable: "total",
-                                    accesses: [],
-                                    asop: AddAssign,
-                                    value: Identity(
-                                        function_call {
-                                            function: "inner",
-                                            arguments: [
-                                                Identity(
-                                                    variable {
-                                                        identifier: "i",
-                                                        accesses: [],
+                                MarkedComponent {
+                                    comp: assign_op {
+                                        variable: MarkedComponent {
+                                            comp: "total",
+                                            mark: Marker {
+                                                row: 3,
+                                                col: 4,
+                                            },
+                                        },
+                                        accesses: [],
+                                        asop: MarkedComponent {
+                                            comp: Assign,
+                                            mark: Marker {
+                                                row: 3,
+                                                col: 10,
+                                            },
+                                        },
+                                        value: MarkedComponent {
+                                            comp: Identity(
+                                                MarkedComponent {
+                                                    comp: number(
+                                                        MarkedComponent {
+                                                            comp: 0.0,
+                                                            mark: Marker {
+                                                                row: 3,
+                                                                col: 12,
+                                                            },
+                                                        },
+                                                    ),
+                                                    mark: Marker {
+                                                        row: 3,
+                                                        col: 12,
+                                                    },
+                                                },
+                                            ),
+                                            mark: Marker {
+                                                row: 3,
+                                                col: 12,
+                                            },
+                                        },
+                                    },
+                                    mark: Marker {
+                                        row: 3,
+                                        col: 4,
+                                    },
+                                },
+                                MarkedComponent {
+                                    comp: empty,
+                                    mark: Marker {
+                                        row: 0,
+                                        col: 0,
+                                    },
+                                },
+                                MarkedComponent {
+                                    comp: function_def {
+                                        identifier: MarkedComponent {
+                                            comp: "inner",
+                                            mark: Marker {
+                                                row: 5,
+                                                col: 8,
+                                            },
+                                        },
+                                        parameters: [
+                                            MarkedComponent {
+                                                comp: "i",
+                                                mark: Marker {
+                                                    row: 5,
+                                                    col: 14,
+                                                },
+                                            },
+                                        ],
+                                        body: MarkedComponent {
+                                            comp: block(
+                                                [
+                                                    MarkedComponent {
+                                                        comp: return_stmt(
+                                                            Some(
+                                                                MarkedComponent {
+                                                                    comp: Binary {
+                                                                        operation: MarkedComponent {
+                                                                            comp: Div,
+                                                                            mark: Marker {
+                                                                                row: 6,
+                                                                                col: 21,
+                                                                            },
+                                                                        },
+                                                                        left: MarkedComponent {
+                                                                            comp: Binary {
+                                                                                operation: MarkedComponent {
+                                                                                    comp: Plus,
+                                                                                    mark: Marker {
+                                                                                        row: 6,
+                                                                                        col: 17,
+                                                                                    },
+                                                                                },
+                                                                                left: MarkedComponent {
+                                                                                    comp: Identity(
+                                                                                        MarkedComponent {
+                                                                                            comp: variable {
+                                                                                                identifier: MarkedComponent {
+                                                                                                    comp: "i",
+                                                                                                    mark: Marker {
+                                                                                                        row: 6,
+                                                                                                        col: 15,
+                                                                                                    },
+                                                                                                },
+                                                                                                accesses: [],
+                                                                                            },
+                                                                                            mark: Marker {
+                                                                                                row: 6,
+                                                                                                col: 15,
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                    mark: Marker {
+                                                                                        row: 6,
+                                                                                        col: 15,
+                                                                                    },
+                                                                                },
+                                                                                right: MarkedComponent {
+                                                                                    comp: Identity(
+                                                                                        MarkedComponent {
+                                                                                            comp: variable {
+                                                                                                identifier: MarkedComponent {
+                                                                                                    comp: "n",
+                                                                                                    mark: Marker {
+                                                                                                        row: 6,
+                                                                                                        col: 19,
+                                                                                                    },
+                                                                                                },
+                                                                                                accesses: [],
+                                                                                            },
+                                                                                            mark: Marker {
+                                                                                                row: 6,
+                                                                                                col: 19,
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                    mark: Marker {
+                                                                                        row: 6,
+                                                                                        col: 19,
+                                                                                    },
+                                                                                },
+                                                                            },
+                                                                            mark: Marker {
+                                                                                row: 6,
+                                                                                col: 15,
+                                                                            },
+                                                                        },
+                                                                        right: MarkedComponent {
+                                                                            comp: Identity(
+                                                                                MarkedComponent {
+                                                                                    comp: variable {
+                                                                                        identifier: MarkedComponent {
+                                                                                            comp: "x",
+                                                                                            mark: Marker {
+                                                                                                row: 6,
+                                                                                                col: 23,
+                                                                                            },
+                                                                                        },
+                                                                                        accesses: [],
+                                                                                    },
+                                                                                    mark: Marker {
+                                                                                        row: 6,
+                                                                                        col: 23,
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                            mark: Marker {
+                                                                                row: 6,
+                                                                                col: 23,
+                                                                            },
+                                                                        },
+                                                                    },
+                                                                    mark: Marker {
+                                                                        row: 6,
+                                                                        col: 15,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                        mark: Marker {
+                                                            row: 6,
+                                                            col: 15,
+                                                        },
+                                                    },
+                                                    MarkedComponent {
+                                                        comp: empty,
+                                                        mark: Marker {
+                                                            row: 0,
+                                                            col: 0,
+                                                        },
+                                                    },
+                                                ],
+                                            ),
+                                            mark: Marker {
+                                                row: 6,
+                                                col: 15,
+                                            },
+                                        },
+                                    },
+                                    mark: Marker {
+                                        row: 5,
+                                        col: 8,
+                                    },
+                                },
+                                MarkedComponent {
+                                    comp: for_loop {
+                                        loop_variable: MarkedComponent {
+                                            comp: "i",
+                                            mark: Marker {
+                                                row: 8,
+                                                col: 8,
+                                            },
+                                        },
+                                        iterator: MarkedComponent {
+                                            comp: Identity(
+                                                MarkedComponent {
+                                                    comp: function_call {
+                                                        function: MarkedComponent {
+                                                            comp: "range",
+                                                            mark: Marker {
+                                                                row: 8,
+                                                                col: 13,
+                                                            },
+                                                        },
+                                                        arguments: [
+                                                            MarkedComponent {
+                                                                comp: Identity(
+                                                                    MarkedComponent {
+                                                                        comp: variable {
+                                                                            identifier: MarkedComponent {
+                                                                                comp: "n",
+                                                                                mark: Marker {
+                                                                                    row: 8,
+                                                                                    col: 19,
+                                                                                },
+                                                                            },
+                                                                            accesses: [],
+                                                                        },
+                                                                        mark: Marker {
+                                                                            row: 8,
+                                                                            col: 19,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                mark: Marker {
+                                                                    row: 8,
+                                                                    col: 19,
+                                                                },
+                                                            },
+                                                        ],
+                                                    },
+                                                    mark: Marker {
+                                                        row: 8,
+                                                        col: 13,
+                                                    },
+                                                },
+                                            ),
+                                            mark: Marker {
+                                                row: 8,
+                                                col: 13,
+                                            },
+                                        },
+                                        body: MarkedComponent {
+                                            comp: block(
+                                                [
+                                                    MarkedComponent {
+                                                        comp: assign_op {
+                                                            variable: MarkedComponent {
+                                                                comp: "total",
+                                                                mark: Marker {
+                                                                    row: 9,
+                                                                    col: 8,
+                                                                },
+                                                            },
+                                                            accesses: [],
+                                                            asop: MarkedComponent {
+                                                                comp: AddAssign,
+                                                                mark: Marker {
+                                                                    row: 9,
+                                                                    col: 14,
+                                                                },
+                                                            },
+                                                            value: MarkedComponent {
+                                                                comp: Identity(
+                                                                    MarkedComponent {
+                                                                        comp: function_call {
+                                                                            function: MarkedComponent {
+                                                                                comp: "inner",
+                                                                                mark: Marker {
+                                                                                    row: 9,
+                                                                                    col: 17,
+                                                                                },
+                                                                            },
+                                                                            arguments: [
+                                                                                MarkedComponent {
+                                                                                    comp: Identity(
+                                                                                        MarkedComponent {
+                                                                                            comp: variable {
+                                                                                                identifier: MarkedComponent {
+                                                                                                    comp: "i",
+                                                                                                    mark: Marker {
+                                                                                                        row: 9,
+                                                                                                        col: 23,
+                                                                                                    },
+                                                                                                },
+                                                                                                accesses: [],
+                                                                                            },
+                                                                                            mark: Marker {
+                                                                                                row: 9,
+                                                                                                col: 23,
+                                                                                            },
+                                                                                        },
+                                                                                    ),
+                                                                                    mark: Marker {
+                                                                                        row: 9,
+                                                                                        col: 23,
+                                                                                    },
+                                                                                },
+                                                                            ],
+                                                                        },
+                                                                        mark: Marker {
+                                                                            row: 9,
+                                                                            col: 17,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                mark: Marker {
+                                                                    row: 9,
+                                                                    col: 17,
+                                                                },
+                                                            },
+                                                        },
+                                                        mark: Marker {
+                                                            row: 9,
+                                                            col: 8,
+                                                        },
+                                                    },
+                                                    MarkedComponent {
+                                                        comp: empty,
+                                                        mark: Marker {
+                                                            row: 0,
+                                                            col: 0,
+                                                        },
+                                                    },
+                                                ],
+                                            ),
+                                            mark: Marker {
+                                                row: 9,
+                                                col: 8,
+                                            },
+                                        },
+                                    },
+                                    mark: Marker {
+                                        row: 8,
+                                        col: 8,
+                                    },
+                                },
+                                MarkedComponent {
+                                    comp: return_stmt(
+                                        Some(
+                                            MarkedComponent {
+                                                comp: Identity(
+                                                    MarkedComponent {
+                                                        comp: variable {
+                                                            identifier: MarkedComponent {
+                                                                comp: "total",
+                                                                mark: Marker {
+                                                                    row: 11,
+                                                                    col: 11,
+                                                                },
+                                                            },
+                                                            accesses: [],
+                                                        },
+                                                        mark: Marker {
+                                                            row: 11,
+                                                            col: 11,
+                                                        },
                                                     },
                                                 ),
-                                            ],
-                                        },
+                                                mark: Marker {
+                                                    row: 11,
+                                                    col: 11,
+                                                },
+                                            },
+                                        ),
                                     ),
+                                    mark: Marker {
+                                        row: 11,
+                                        col: 11,
+                                    },
                                 },
-                                empty,
+                                MarkedComponent {
+                                    comp: empty,
+                                    mark: Marker {
+                                        row: 0,
+                                        col: 0,
+                                    },
+                                },
                             ],
                         ),
+                        mark: Marker {
+                            row: 3,
+                            col: 4,
+                        },
                     },
-                    return_stmt(
-                        Some(
-                            Identity(
-                                variable {
-                                    identifier: "total",
-                                    accesses: [],
+                },
+                mark: Marker {
+                    row: 2,
+                    col: 4,
+                },
+            },
+            MarkedComponent {
+                comp: function_call {
+                    function: MarkedComponent {
+                        comp: "outer",
+                        mark: Marker {
+                            row: 13,
+                            col: 0,
+                        },
+                    },
+                    arguments: [
+                        MarkedComponent {
+                            comp: Identity(
+                                MarkedComponent {
+                                    comp: number(
+                                        MarkedComponent {
+                                            comp: 5.0,
+                                            mark: Marker {
+                                                row: 13,
+                                                col: 6,
+                                            },
+                                        },
+                                    ),
+                                    mark: Marker {
+                                        row: 13,
+                                        col: 6,
+                                    },
                                 },
                             ),
-                        ),
-                    ),
-                    empty,
-                ],
-            ),
-        },
-        function_call {
-            function: "outer",
-            arguments: [
-                Identity(
-                    number(
-                        5.0,
-                    ),
-                ),
-            ],
-        },
-    ],
-)
+                            mark: Marker {
+                                row: 13,
+                                col: 6,
+                            },
+                        },
+                    ],
+                },
+                mark: Marker {
+                    row: 13,
+                    col: 0,
+                },
+            },
+        ],
+    ),
+    mark: Marker {
+        row: 0,
+        col: 0,
+    },
+}

@@ -3,16 +3,17 @@ use log::{debug, trace};
 use crate::non_identity_ast;
 use crate::parser::ParseError;
 use crate::parser::building_blocks::Asop;
+use crate::parser::markers::*;
 use crate::parser::ptag::{AstNode, OperationTree};
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 #[derive(Debug)]
 pub struct SymbolTable {
-    local_vars: Vec<String>,
-    cell_vars: Vec<String>,
-    free_vars: Vec<String>,
-    global_accesses: Vec<String>,
+    local_vars: Vec<MarkedString>,
+    cell_vars: Vec<MarkedString>,
+    free_vars: Vec<MarkedString>,
+    global_accesses: Vec<MarkedString>,
     children: Vec<Self>,
 }
 
@@ -28,19 +29,19 @@ enum VarClassification {
 }
 
 struct ScopeEnv {
-    vars: Rc<RefCell<HashMap<String, VarClassification>>>,
+    vars: Rc<RefCell<HashMap<MarkedString, VarClassification>>>,
     parent: Option<Rc<Self>>,
 }
 
 impl ScopeEnv {
     fn new(
-        vars: Rc<RefCell<HashMap<String, VarClassification>>>,
+        vars: Rc<RefCell<HashMap<MarkedString, VarClassification>>>,
         parent: Option<Rc<Self>>,
     ) -> Self {
         Self { vars, parent }
     }
 
-    fn find_and_promote(&self, var: &String) -> bool {
+    fn find_and_promote(&self, var: &MarkedString) -> bool {
         let Some(parent) = &self.parent else {
             // If we're at module level, we consider all variables (even if they exist) as "not found"
             // so the caller can assume the variable as a global access
@@ -60,12 +61,12 @@ impl ScopeEnv {
 }
 
 impl SymbolTable {
-    pub fn from_root_ast(scope: &AstNode) -> Result<Self, ParseError> {
+    pub fn from_root_ast(scope: &MarkedAstNode) -> Result<Self, ParseError> {
         Self::from_scope_ast(scope, None)
     }
 
-    fn from_scope_ast<'a>(
-        scope: &'a AstNode,
+    fn from_scope_ast(
+        scope: &MarkedAstNode,
         parent_env: Option<Rc<ScopeEnv>>,
     ) -> Result<Self, ParseError> {
         debug!("SymbolTable::from_scope_ast() started");
@@ -100,7 +101,7 @@ impl SymbolTable {
         }
 
         // Recursively build the inner scopes' symbol tables
-        let env = Rc::new(ScopeEnv::new(vars.clone(), parent_env.map(|p| p.clone())));
+        let env = Rc::new(ScopeEnv::new(vars.clone(), parent_env));
         let mut child_tables = Vec::new();
         for inner_scope in inner_scopes {
             child_tables.push(Self::from_scope_ast(inner_scope, Some(env.clone()))?);
@@ -134,16 +135,16 @@ impl SymbolTable {
     }
 
     fn find_vars<'a>(
-        root_node: &'a AstNode,
-        inner_scopes: &mut Vec<&'a AstNode>,
-    ) -> Result<HashMap<String, VarClassification>, ParseError> {
+        root_node: &'a MarkedAstNode,
+        inner_scopes: &mut Vec<&'a MarkedAstNode>,
+    ) -> Result<HashMap<MarkedString, VarClassification>, ParseError> {
         let mut analysis_node = root_node;
         let mut result = HashMap::new();
 
         // Handle parameters as local variables when dealing with a function definition
         if let AstNode::function_def {
             parameters, body, ..
-        } = root_node
+        } = &root_node.comp
         {
             for param in parameters {
                 result.insert(param.clone(), VarClassification::Local);
@@ -155,11 +156,11 @@ impl SymbolTable {
     }
 
     fn find_vars_ast<'a>(
-        node: &'a AstNode,
-        vars: &mut HashMap<String, VarClassification>,
-        inner_scopes: &mut Vec<&'a AstNode>,
+        node: &'a MarkedAstNode,
+        vars: &mut HashMap<MarkedString, VarClassification>,
+        inner_scopes: &mut Vec<&'a MarkedAstNode>,
     ) -> Result<(), ParseError> {
-        match node {
+        match &node.comp {
             AstNode::empty => {
                 trace!("Called find_vars_ast() on an empty");
             }
@@ -227,17 +228,23 @@ impl SymbolTable {
                 // so the var must have been evaluated as local ALREADY
                 match vars.get(variable) {
                     Some(VarClassification::Read) => {
-                        return Err(ParseError::general(&format!(
-                            "local variable '{variable}' referenced before assignment"
-                        )));
+                        return Err(ParseError::marked(
+                            &format!("local variable '{variable}' referenced before assignment"),
+                            variable.mark.row,
+                            variable.mark.col,
+                        ));
                     }
                     Some(VarClassification::Local) => {}
                     Some(_) => unreachable!(),
                     None => {
-                        if !matches!(asop, Asop::Assign) {
-                            return Err(ParseError::general(&format!(
-                                "local variable '{variable}' referenced before assignment"
-                            )));
+                        if !matches!(asop.comp, Asop::Assign) {
+                            return Err(ParseError::marked(
+                                &format!(
+                                    "local variable '{variable}' referenced before assignment"
+                                ),
+                                variable.mark.row,
+                                variable.mark.col,
+                            ));
                         }
                         vars.insert(variable.clone(), VarClassification::Local);
                     }
@@ -247,7 +254,7 @@ impl SymbolTable {
             }
             _ => {
                 // Find vars in all the ast nodes that directly mention them (identity operations)
-                match node {
+                match &node.comp {
                     AstNode::function_call { .. } => {
                         // This is above
                         unreachable!()
@@ -303,11 +310,11 @@ impl SymbolTable {
     }
 
     fn find_vars_op<'a>(
-        node: &'a OperationTree,
-        vars: &mut HashMap<String, VarClassification>,
-        inner_scopes: &mut Vec<&'a AstNode>,
+        node: &'a MarkedOperationTree,
+        vars: &mut HashMap<MarkedString, VarClassification>,
+        inner_scopes: &mut Vec<&'a MarkedAstNode>,
     ) -> Result<(), ParseError> {
-        match node {
+        match &node.comp {
             OperationTree::Binary {
                 operation: _,
                 left,
@@ -331,14 +338,16 @@ impl SymbolTable {
     }
 
     fn put_local(
-        identifier: &String,
-        vars: &mut HashMap<String, VarClassification>,
+        identifier: &MarkedString,
+        vars: &mut HashMap<MarkedString, VarClassification>,
     ) -> Result<(), ParseError> {
         match vars.get(identifier) {
             Some(VarClassification::Read) => {
-                return Err(ParseError::general(&format!(
-                    "local variable '{identifier}' referenced before assignment"
-                )));
+                return Err(ParseError::marked(
+                    &format!("local variable '{identifier}' referenced before assignment"),
+                    identifier.mark.row,
+                    identifier.mark.col,
+                ));
             }
             Some(VarClassification::Local) => {}
             Some(_) => unreachable!(),
@@ -350,7 +359,7 @@ impl SymbolTable {
         Ok(())
     }
 
-    fn put_read(identifier: &String, vars: &mut HashMap<String, VarClassification>) {
+    fn put_read(identifier: &MarkedString, vars: &mut HashMap<MarkedString, VarClassification>) {
         match vars.get(identifier) {
             Some(VarClassification::Read | VarClassification::Local) => {}
             Some(_) => unreachable!(),

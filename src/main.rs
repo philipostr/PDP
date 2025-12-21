@@ -28,6 +28,12 @@ fn main() {
             _ => Err(e),
         })
         .expect("Couldn't clear pdp_out");
+    fs::remove_file("pdp_out/symbol_table.txt")
+        .or_else(|e| match e.kind() {
+            std::io::ErrorKind::NotFound => Ok(()),
+            _ => Err(e),
+        })
+        .expect("Couldn't clear pdp_out");
 
     env_logger::builder()
         .format_source_path(true)

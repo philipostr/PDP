@@ -3,34 +3,94 @@ SymbolTable {
     cell_vars: [],
     free_vars: [],
     global_accesses: [
-        "outer",
-        "x",
+        MarkedComponent {
+            comp: "x",
+            mark: Marker {
+                row: 0,
+                col: 0,
+            },
+        },
+        MarkedComponent {
+            comp: "outer",
+            mark: Marker {
+                row: 2,
+                col: 4,
+            },
+        },
     ],
     children: [
         SymbolTable {
             local_vars: [
-                "inner",
-                "total",
-                "i",
+                MarkedComponent {
+                    comp: "total",
+                    mark: Marker {
+                        row: 3,
+                        col: 4,
+                    },
+                },
+                MarkedComponent {
+                    comp: "inner",
+                    mark: Marker {
+                        row: 5,
+                        col: 8,
+                    },
+                },
+                MarkedComponent {
+                    comp: "i",
+                    mark: Marker {
+                        row: 8,
+                        col: 8,
+                    },
+                },
             ],
             cell_vars: [
-                "n",
+                MarkedComponent {
+                    comp: "n",
+                    mark: Marker {
+                        row: 2,
+                        col: 10,
+                    },
+                },
             ],
             free_vars: [],
             global_accesses: [
-                "range",
+                MarkedComponent {
+                    comp: "range",
+                    mark: Marker {
+                        row: 8,
+                        col: 13,
+                    },
+                },
             ],
             children: [
                 SymbolTable {
                     local_vars: [
-                        "i",
+                        MarkedComponent {
+                            comp: "i",
+                            mark: Marker {
+                                row: 5,
+                                col: 14,
+                            },
+                        },
                     ],
                     cell_vars: [],
                     free_vars: [
-                        "n",
+                        MarkedComponent {
+                            comp: "n",
+                            mark: Marker {
+                                row: 6,
+                                col: 19,
+                            },
+                        },
                     ],
                     global_accesses: [
-                        "x",
+                        MarkedComponent {
+                            comp: "x",
+                            mark: Marker {
+                                row: 6,
+                                col: 23,
+                            },
+                        },
                     ],
                     children: [],
                 },

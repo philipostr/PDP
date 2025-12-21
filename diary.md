@@ -1,3 +1,7 @@
+## Entry #7 (December 20, 2025) *I save myself, sort of*
+
+That was painful. Who knew that creating a new marking system to add row and column metadata to every bit of information contained within the AST would be so annoyingly tedious? In the end, however, I think that I have done something right in my prior architectural decisions, as this burden was **only** tedious, not difficult. Yes, I had to amend a lot of things, but amending is incredibly different from modifying. With the exception of a handlefull of very small things, all the amendments were simple additions, there was no logic or complicated functionality that was broken or even remotely worsened by the addition of markers. It sounds obvious, but the most simple of things can cause the biggest complications. Let's see where this takes us.
+
 ## Entry #6 (December 18, 2025) *Lexical parsing, shmexical parsing*
 
 Why did I not keep row-column data across the concrete-to-abstract barrier? That was so stupid... now error messages in symbol-table creation and beyond (including a minor thing called EXECUTION) will not be able to be marked. How smart of past me, truly. I'm probably going to end up ammending this abomonable lack of forethought as my next step.

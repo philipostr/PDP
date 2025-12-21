@@ -1,5 +1,6 @@
 pub mod building_blocks;
 mod lexer;
+mod markers;
 pub mod ptag;
 pub mod symbol_table;
 mod tpg;
