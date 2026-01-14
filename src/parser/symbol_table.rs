@@ -8,11 +8,13 @@ use crate::parser::ptag::{AstNode, OperationTree};
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SymbolTable {
     local_vars: Vec<MarkedString>,
     cell_vars: Vec<MarkedString>,
     free_vars: Vec<MarkedString>,
+    /// Just here for verification and debugging
+    #[allow(dead_code)]
     global_accesses: Vec<MarkedString>,
     children: Vec<Self>,
 }
@@ -367,5 +369,31 @@ impl SymbolTable {
                 vars.insert(identifier.clone(), VarClassification::Read);
             }
         }
+    }
+
+    pub fn local_idx(&self, name: &MarkedString) -> Option<usize> {
+        self.local_vars.iter().position(|n| n == name)
+    }
+
+    pub fn deref_idx(&self, name: &MarkedString) -> Option<usize> {
+        if let Some(idx) = self.cell_vars.iter().position(|n| n == name) {
+            Some(idx)
+        } else if let Some(idx) = self.free_vars.iter().position(|n| n == name) {
+            Some(idx + self.cell_vars.len())
+        } else {
+            None
+        }
+    }
+
+    pub fn child(&self, c: usize) -> &Self {
+        &self.children[c]
+    }
+
+    pub fn num_local_vars(&self) -> usize {
+        self.local_vars.len()
+    }
+
+    pub fn num_deref_vars(&self) -> usize {
+        self.cell_vars.len() + self.free_vars.len()
     }
 }

@@ -92,6 +92,18 @@ where
     }
 }
 
+impl<T> From<T> for MarkedComponent<T>
+where
+    T: Debug,
+{
+    fn from(value: T) -> Self {
+        Self {
+            comp: value,
+            mark: Marker::default(),
+        }
+    }
+}
+
 impl<T> MarkedComponent<T>
 where
     T: Debug,

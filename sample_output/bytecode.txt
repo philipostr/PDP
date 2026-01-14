@@ -1,0 +1,44 @@
+0x1fb0f6cbda8:
+0      LOAD_LOCAL 0
+1      LOAD_ATTR '__add__'
+2      LOAD_DEREF 0
+3      SWAP_TOP
+4      CALL_FUNCTION 1
+5      LOAD_ATTR '__truediv__'
+6      LOAD_GLOBAL 'x'
+7      SWAP_TOP
+8      CALL_FUNCTION 1
+9      RETURN_VALUE
+
+0x1fb0f6cbbc8:
+0      LOAD_CONST 0
+1      STORE_LOCAL 0
+2      LOAD_CONST Code(0x1fb0f6cbda8)
+3      MAKE_FUNCTION 1
+4      STORE_LOCAL 1
+5      LOAD_DEREF 0
+6      LOAD_GLOBAL 'range'
+7      CALL_FUNCTION 1
+8      MAKE_GENERATOR
+9      FOR_ITER 7
+10     STORE_LOCAL 2
+11     LOAD_LOCAL 2
+12     LOAD_LOCAL 1
+13     CALL_FUNCTION 1
+14     STORE_LOCAL 0
+15     JUMP_ABSOLUTE 9
+16     LOAD_LOCAL 0
+17     RETURN_VALUE
+
+<module>:
+0      LOAD_CONST 10
+1      STORE_GLOBAL 'x'
+2      LOAD_CONST Code(0x1fb0f6cbbc8)
+3      MAKE_FUNCTION 1
+4      STORE_GLOBAL 'outer'
+5      LOAD_CONST 5
+6      LOAD_GLOBAL 'outer'
+7      CALL_FUNCTION 1
+8      LOAD_CONST None
+9      RETURN_VALUE
+

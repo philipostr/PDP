@@ -1,3 +1,11 @@
+## Entry #8 (January 13, 2026) *Bytecode did not byte me in the ass today*
+
+Happy new year! And what a happy new year it truly is. This is my greatest triumph in this project; I have built my way from the ground up, without any clue as to how compilers work and how much work compilers would be, to this jubilous point we now find ourselves. I have been raised from the abyss, having been burned and scared by the azure flames of the almighty dragon, but alive I remain, with no less than prevailance at my side!
+
+What is so good about this day? Why, this may have been the biggest moment that shall be observed by PDP. We have crossed the border, through thick and thin, across the yellow brick road, all the way from Parserville to Bytecodetropia. This is no longer a drill folks, we're not longer trying to understand what the programmer wants... now, we DO IT. Designing the whole of the bytecode architecture, including what the VM will look like and its dependencies, and cross referencing it with the bytecode instruction set that I was slowly building up, was such an incredible joy. I truly cannot explain how deeply I loved the experience, to the occassional dismay of my unfortunate girlfriend, who has against all odds continued to deal with my vast depths of nerdiness.
+
+There's just one step left... one more step to take... and that step shall be taken. The bytecode will be executed, and it will be glorious.
+
 ## Entry #7 (December 20, 2025) *I save myself, sort of*
 
 That was painful. Who knew that creating a new marking system to add row and column metadata to every bit of information contained within the AST would be so annoyingly tedious? In the end, however, I think that I have done something right in my prior architectural decisions, as this burden was **only** tedious, not difficult. Yes, I had to amend a lot of things, but amending is incredibly different from modifying. With the exception of a handlefull of very small things, all the amendments were simple additions, there was no logic or complicated functionality that was broken or even remotely worsened by the addition of markers. It sounds obvious, but the most simple of things can cause the biggest complications. Let's see where this takes us.

@@ -1,6 +1,6 @@
 pub mod building_blocks;
 mod lexer;
-mod markers;
+pub mod markers;
 pub mod ptag;
 pub mod symbol_table;
 mod tpg;
@@ -9,6 +9,11 @@ use std::{fmt::Display, fs, sync::OnceLock};
 
 use colored::Colorize;
 use log::{info, warn};
+
+use crate::parser::{
+    symbol_table::SymbolTable,
+    tpg::{ParseTokensRes, ProgramNode},
+};
 
 static FILENAME: OnceLock<String> = OnceLock::new();
 static LINES: OnceLock<Vec<String>> = OnceLock::new();
@@ -89,15 +94,18 @@ impl ParseError {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct Parser {}
 
 impl Parser {
     pub fn new() -> Self {
-        Self {}
+        Self::default()
     }
 
-    pub fn parse_from_file(&mut self, filename: &str) -> Result<(), ParseError> {
+    pub fn parse_from_file(
+        self,
+        filename: &str,
+    ) -> Result<(ParseTokensRes<ProgramNode>, SymbolTable), ParseError> {
         FILENAME.set(filename.to_string()).unwrap();
         let script =
             fs::read_to_string(filename).map_err(|e| ParseError::general(&e.to_string()))?;
@@ -105,7 +113,10 @@ impl Parser {
         self.parse_from_str(&script)
     }
 
-    pub fn parse_from_str(&mut self, script: &str) -> Result<(), ParseError> {
+    pub fn parse_from_str(
+        self,
+        script: &str,
+    ) -> Result<(ParseTokensRes<ProgramNode>, SymbolTable), ParseError> {
         info!("Producing token stream");
         let mut lex = lexer::Lexer::new();
 
@@ -171,6 +182,6 @@ impl Parser {
             warn!("couldn't output symbol table: {e:?}");
         }
 
-        Ok(())
+        Ok((parse_results, symbol_table))
     }
 }

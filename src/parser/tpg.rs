@@ -5,7 +5,7 @@ use std::fmt::Debug;
 
 use super::markers::*;
 use super::{ParseError, building_blocks::*};
-use crate::{parser::ptag::AstNode, util::two_way_iterator::TwoWayIterator};
+use crate::{parser::ptag::AstNode, util::TwoWayIterator};
 
 #[derive(Debug, Default, Clone)]
 pub struct Context {
@@ -836,7 +836,11 @@ impl ParseTreeNode for ScopedNode {
                 trace!("[ScopedNode::parse()] Unexpected token {first:?}");
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token, expected: newline, indentation", line, col)),
+                    Err(ParseError::marked(
+                        "unexpected token, expected: newline, indentation",
+                        line,
+                        col,
+                    )),
                 )
             }
         }
@@ -1120,7 +1124,11 @@ impl ParseTreeNode for UnitNode {
                 trace!("[UnitNode::parse()] Unexpected token {first:?}");
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token, expected: `if`, `while`, `for`, `continue`, `break`, `def`, name", line, col)),
+                    Err(ParseError::marked(
+                        "unexpected token, expected: `if`, `while`, `for`, `continue`, `break`, `def`, name",
+                        line,
+                        col,
+                    )),
                 )
             }
         }
@@ -1190,7 +1198,11 @@ impl ParseTreeNode for ResultNode {
 
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token, expected: newline, name", line, col)),
+                    Err(ParseError::marked(
+                        "unexpected token, expected: newline, name",
+                        line,
+                        col,
+                    )),
                 )
             }
         }
@@ -1264,7 +1276,11 @@ impl ParseTreeNode for BodyNode {
 
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token, expected: newline, `return`", line, col)),
+                    Err(ParseError::marked(
+                        "unexpected token, expected: newline, `return`",
+                        line,
+                        col,
+                    )),
                 )
             }
         }
@@ -1598,7 +1614,11 @@ impl ParseTreeNode for ExprUnitNode {
 
                 (
                     advanced,
-                    Err(ParseError::marked("unexpected token, expected: name, `(`, `[`, `{`, string, number, boolean", line, col)),
+                    Err(ParseError::marked(
+                        "unexpected token, expected: name, `(`, `[`, `{`, string, number, boolean",
+                        line,
+                        col,
+                    )),
                 )
             }
         }

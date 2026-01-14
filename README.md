@@ -17,7 +17,9 @@ https://github.com/philipostr/PDP/blob/main/specs/Tokens.md
 * _Formal TPG for this project_  
 https://github.com/philipostr/PDP/blob/main/specs/TPG.md
 * _Formal PTAG for this project_  
-https://github.com/philipostr/PDP/blob/main/specs/TPG.md
+https://github.com/philipostr/PDP/blob/main/specs/PTAG.md
+* _Bytecode VM architecture_  
+https://github.com/philipostr/PDP/blob/main/specs/bytecode.md
 
 ## Development
 
@@ -32,3 +34,4 @@ The following files will be created under the `pdp_out/` directory:
 - `parse_tree.txt`: A pretty-print of the concrete parse tree that was constructed from the token stream.
 - `ast.txt`: A pretty-print of the abstract syntax tree that was extracted from the parse tree.
 - `symbol_table.txt`: A pretty-print of the symbol table that was built up from the AST.
+- `bytecode.txt`: A human-readable representation of the bytecode that was emitted from the AST and symbol tables.

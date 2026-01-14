@@ -1,5 +1,5 @@
-[INFO  src\parser.rs:109] Producing token stream
-[INFO  src\parser.rs:147] Generating concrete parse tree and AST
+[INFO  src\parser.rs:111] Producing token stream
+[INFO  src\parser.rs:149] Generating concrete parse tree and AST
 [DEBUG src\parser\tpg.rs:510] parse_tokens() started
 [DEBUG src\parser\tpg.rs:697] ProgramNode::parse() started
 [TRACE src\parser\tpg.rs:727] [ProgramNode::parse()] Started Scoped* arm
@@ -260,39 +260,132 @@
 [DEBUG src\parser\tpg.rs:756] ScopedNode::parse() started
 [TRACE src\parser\tpg.rs:836] [ScopedNode::parse()] Unexpected token END
 [TRACE src\parser\tpg.rs:558] [Star::<PDP::parser::tpg::ScopedNode>::parse()] Matched 4 nodes
-[INFO  src\parser.rs:164] Building symbol tables
-[DEBUG src\parser\symbol_table.rs:72] SymbolTable::from_scope_ast() started
-[TRACE src\parser\symbol_table.rs:168] Called find_vars_ast() on a block
-[TRACE src\parser\symbol_table.rs:226] Called find_vars_ast() on an assign_op
-[TRACE src\parser\symbol_table.rs:295] Called find_vars_ast() on a number
-[TRACE src\parser\symbol_table.rs:165] Called find_vars_ast() on an empty
-[TRACE src\parser\symbol_table.rs:206] Called find_vars_ast() on a function_def
-[TRACE src\parser\symbol_table.rs:214] Called find_vars_ast() on a function_call
-[TRACE src\parser\symbol_table.rs:295] Called find_vars_ast() on a number
-[DEBUG src\parser\symbol_table.rs:72] SymbolTable::from_scope_ast() started
-[TRACE src\parser\symbol_table.rs:168] Called find_vars_ast() on a block
-[TRACE src\parser\symbol_table.rs:226] Called find_vars_ast() on an assign_op
-[TRACE src\parser\symbol_table.rs:295] Called find_vars_ast() on a number
-[TRACE src\parser\symbol_table.rs:165] Called find_vars_ast() on an empty
-[TRACE src\parser\symbol_table.rs:206] Called find_vars_ast() on a function_def
-[TRACE src\parser\symbol_table.rs:188] Called find_vars_ast() on a for_loop
-[TRACE src\parser\symbol_table.rs:214] Called find_vars_ast() on a function_call
-[TRACE src\parser\symbol_table.rs:266] Called find_vars_ast() on a variable
-[TRACE src\parser\symbol_table.rs:168] Called find_vars_ast() on a block
-[TRACE src\parser\symbol_table.rs:226] Called find_vars_ast() on an assign_op
-[TRACE src\parser\symbol_table.rs:214] Called find_vars_ast() on a function_call
-[TRACE src\parser\symbol_table.rs:266] Called find_vars_ast() on a variable
-[TRACE src\parser\symbol_table.rs:165] Called find_vars_ast() on an empty
-[TRACE src\parser\symbol_table.rs:200] Called find_vars_ast() on a return_stmt
-[TRACE src\parser\symbol_table.rs:266] Called find_vars_ast() on a variable
-[TRACE src\parser\symbol_table.rs:165] Called find_vars_ast() on an empty
-[DEBUG src\parser\symbol_table.rs:72] SymbolTable::from_scope_ast() started
-[TRACE src\parser\symbol_table.rs:168] Called find_vars_ast() on a block
-[TRACE src\parser\symbol_table.rs:200] Called find_vars_ast() on a return_stmt
-[TRACE src\parser\symbol_table.rs:266] Called find_vars_ast() on a variable
-[TRACE src\parser\symbol_table.rs:266] Called find_vars_ast() on a variable
-[TRACE src\parser\symbol_table.rs:266] Called find_vars_ast() on a variable
-[TRACE src\parser\symbol_table.rs:165] Called find_vars_ast() on an empty
-[DEBUG src\parser\symbol_table.rs:127] SymbolTable::from_scope_ast() ended
-[DEBUG src\parser\symbol_table.rs:127] SymbolTable::from_scope_ast() ended
-[DEBUG src\parser\symbol_table.rs:127] SymbolTable::from_scope_ast() ended
+[INFO  src\parser.rs:166] Building symbol tables
+[DEBUG src\parser\symbol_table.rs:74] SymbolTable::from_scope_ast() started
+[TRACE src\parser\symbol_table.rs:170] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:228] Called find_vars_ast() on an assign_op
+[TRACE src\parser\symbol_table.rs:297] Called find_vars_ast() on a number
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on an empty
+[TRACE src\parser\symbol_table.rs:208] Called find_vars_ast() on a function_def
+[TRACE src\parser\symbol_table.rs:216] Called find_vars_ast() on a function_call
+[TRACE src\parser\symbol_table.rs:297] Called find_vars_ast() on a number
+[DEBUG src\parser\symbol_table.rs:74] SymbolTable::from_scope_ast() started
+[TRACE src\parser\symbol_table.rs:170] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:228] Called find_vars_ast() on an assign_op
+[TRACE src\parser\symbol_table.rs:297] Called find_vars_ast() on a number
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on an empty
+[TRACE src\parser\symbol_table.rs:208] Called find_vars_ast() on a function_def
+[TRACE src\parser\symbol_table.rs:190] Called find_vars_ast() on a for_loop
+[TRACE src\parser\symbol_table.rs:216] Called find_vars_ast() on a function_call
+[TRACE src\parser\symbol_table.rs:268] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:170] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:228] Called find_vars_ast() on an assign_op
+[TRACE src\parser\symbol_table.rs:216] Called find_vars_ast() on a function_call
+[TRACE src\parser\symbol_table.rs:268] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on an empty
+[TRACE src\parser\symbol_table.rs:202] Called find_vars_ast() on a return_stmt
+[TRACE src\parser\symbol_table.rs:268] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on an empty
+[DEBUG src\parser\symbol_table.rs:74] SymbolTable::from_scope_ast() started
+[TRACE src\parser\symbol_table.rs:170] Called find_vars_ast() on a block
+[TRACE src\parser\symbol_table.rs:202] Called find_vars_ast() on a return_stmt
+[TRACE src\parser\symbol_table.rs:268] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:268] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:268] Called find_vars_ast() on a variable
+[TRACE src\parser\symbol_table.rs:167] Called find_vars_ast() on an empty
+[DEBUG src\parser\symbol_table.rs:129] SymbolTable::from_scope_ast() ended
+[DEBUG src\parser\symbol_table.rs:129] SymbolTable::from_scope_ast() ended
+[DEBUG src\parser\symbol_table.rs:129] SymbolTable::from_scope_ast() ended
+[INFO  src\main.rs:67] Emitting bytecode
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:215] BytecodeEmitter::block() started
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:492] BytecodeEmitter::assign_op() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:548] BytecodeEmitter::assign_op() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:407] BytecodeEmitter::function_def() started
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:215] BytecodeEmitter::block() started
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:492] BytecodeEmitter::assign_op() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:548] BytecodeEmitter::assign_op() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:407] BytecodeEmitter::function_def() started
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:215] BytecodeEmitter::block() started
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:379] BytecodeEmitter::return_stmt() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:392] BytecodeEmitter::return_stmt() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:222] BytecodeEmitter::block() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:431] BytecodeEmitter::function_def() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:304] BytecodeEmitter::for_loop() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:441] BytecodeEmitter::function_call() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:451] BytecodeEmitter::function_call() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:215] BytecodeEmitter::block() started
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:492] BytecodeEmitter::assign_op() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:441] BytecodeEmitter::function_call() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:451] BytecodeEmitter::function_call() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:548] BytecodeEmitter::assign_op() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:222] BytecodeEmitter::block() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:335] BytecodeEmitter::for_loop() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:379] BytecodeEmitter::return_stmt() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:392] BytecodeEmitter::return_stmt() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:222] BytecodeEmitter::block() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:431] BytecodeEmitter::function_def() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:170] BytecodeEmitter::ast() started
+[DEBUG src\bytecode\bytecode_emitter.rs:441] BytecodeEmitter::function_call() started
+[DEBUG src\bytecode\bytecode_emitter.rs:553] BytecodeEmitter::operation_tree() started
+[DEBUG src\bytecode\bytecode_emitter.rs:646] BytecodeEmitter::operation_tree() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:451] BytecodeEmitter::function_call() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:222] BytecodeEmitter::block() ended
+[DEBUG src\bytecode\bytecode_emitter.rs:203] BytecodeEmitter::ast() ended

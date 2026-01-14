@@ -1,9 +1,16 @@
 use std::ops::{Index, RangeFull};
 
 #[derive(Debug)]
+pub enum Direction {
+    Forwards,
+    Backwards,
+}
+
+#[derive(Debug)]
 pub struct TwoWayIterator<'a, T> {
     source: &'a [T],
     cursor: usize,
+    direction: Direction,
 }
 
 impl<'a, T> Iterator for TwoWayIterator<'a, T> {
@@ -28,7 +35,43 @@ impl<'a, T> TwoWayIterator<'a, T> {
         Self {
             source: &source[..],
             cursor: 0,
+            direction: Direction::Forwards,
         }
+    }
+
+    pub fn dir_next(&mut self) -> Option<&T> {
+        match self.direction {
+            Direction::Forwards => self.next(),
+            Direction::Backwards => self.rev(),
+        }
+    }
+
+    pub fn dir_rev(&mut self) -> Option<&T> {
+        match self.direction {
+            Direction::Forwards => self.rev(),
+            Direction::Backwards => self.next(),
+        }
+    }
+
+    pub fn dir_next_nth(&mut self, n: usize) -> Option<&T> {
+        match self.direction {
+            Direction::Forwards => self.nth(n),
+            Direction::Backwards => self.rev_nth(n),
+        }
+    }
+
+    pub fn dir_rev_nth(&mut self, n: usize) -> Option<&T> {
+        match self.direction {
+            Direction::Forwards => self.rev_nth(n),
+            Direction::Backwards => self.nth(n),
+        }
+    }
+
+    pub fn flip(&mut self) {
+        self.direction = match self.direction {
+            Direction::Forwards => Direction::Backwards,
+            Direction::Backwards => Direction::Forwards,
+        };
     }
 
     /// Peek at the next value without moving the iterator.
