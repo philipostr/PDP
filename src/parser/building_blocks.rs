@@ -103,16 +103,23 @@ impl Op {
             Op::Lte => "__le__",
             Op::And => "__and__",
             Op::Or => "__or__",
-            Op::Not => "__inv__",
+            Op::Not => "__bool__",
             Op::BWAnd => "__bwand__",
             Op::BWOr => "__bwor__",
-            Op::BWNot => "__bwinv__",
+            Op::BWNot => "__invert__",
             Op::Xor => "__xor__",
             Op::ShLeft => "__lshift__",
             Op::ShRight => "__rshift__",
             Op::In => "__contains__",
-            Op::NotIn => "__ncontains__",
+            Op::NotIn => "__contains__",
             Op::Identity => "",
+        }
+    }
+
+    pub fn negates_dunderscore(&self) -> bool {
+        match self {
+            Op::NotIn | Op::Neq | Op::Not => true,
+            _ => false,
         }
     }
 

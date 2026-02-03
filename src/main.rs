@@ -71,4 +71,8 @@ fn main() {
         eprintln!("Warning: couldn't output bytecode: {e:?}");
         warn!("couldn't output symbol bytecode: {e:?}");
     }
+
+    info!("Starting up the VM");
+    let mut vm = bytecode::VM::new(emitter);
+    vm.start();
 }

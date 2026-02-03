@@ -25,7 +25,7 @@ https://github.com/philipostr/PDP/blob/main/specs/bytecode.md
 
 To run unoptimized with trace logging, run (modified as necessary):
 ```
-RUST_LOG=trace RUSTFLAGS="-Awarnings" cargo run
+RUST_BACKTRACE=1 RUST_LOG=trace RUSTFLAGS="-Awarnings" cargo run -q
 ```
 
 The following files will be created under the `pdp_out/` directory:

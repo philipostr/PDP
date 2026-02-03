@@ -5,23 +5,22 @@ config:
 ---
 classDiagram
     class VM {
-        globals: Map~Object~
-        builtin_funcs: Map~Rc~RefCell~~Object~~~
+        globals: Map~Rc~RefCell~~Object~~~
+        builtins: Map~Rc~RefCell~~Object~~~
+        classes: Vec~Class~
         frame_stack: Vec~Frame~
         eval_stack: Vec~Rc~RefCell~Object~~~
+        temp_stack: Vec~Rc~RefCell~Object~~~
         +start()
         -execute_opcode(OpCode)
     }
     class Frame {
-        stack_offset: usize
         local_vars: Vec~Rc~RefCell~Object~~~
         free_vars: Vec~Rc~RefCell~Object~~~
         cell_vars: Vec~Rc~RefCell~Object~~~
-        temp_stack: Vec~Rc~RefCell~Object~~~
         bytecode: Vec~OpCode~
         ip: usize
         next_instruction() OpCode
-        set_ip()
     }
     class OpCode {
         <<enumeration>>
@@ -60,18 +59,23 @@ classDiagram
         last_value: Rc~RefCell~Object~~
         is_done: bool
     }
+    class Instance {
+        class: usize
+        attrs: Map~Rc~RefCell~Object~~~
+    }
     class Class {
-        name: String,
+        id: usize,
         attrs: Map~Rc~RefCell~Object~~~
     }
 
     VM --> Frame
     VM --> Object
+    VM --> Class
+    VM --> OpCode
     Frame --> Object
     Frame --> OpCode
-    VM --> OpCode
 
-    Object --> Class
+    Object --> Instance
     Object --> CodeObject
     Object --> CompiledFunction
     Object --> FrozenGenerator
@@ -79,6 +83,8 @@ classDiagram
     CompiledFunction --> CodeObject
     FrozenGenerator --> Object
     FrozenGenerator --> OpCode
+    Instance --> Class
+    Instance --> Object
     Class --> Object
 ```
 

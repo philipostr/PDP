@@ -1,3 +1,20 @@
+## Entry #9 (February 2, 2026) *The prophecy has come to pass*
+
+It is time... the project has come to a close. There have been highs and lows, excitements and restarts, fleeting moments of progress and ceaseless meriads of failures wrought with pain. But we are here now, together, as the looming shadow in th shape of intertwining serpents finally aligns in our view: Python has been completed!!
+
+To be clear, the project itself will be ongoing for a little while longer to support some much-needed features such as:
+1. `elif` and `else`
+2. Attribute accesses
+3. Custom classes
+4. f-strings
+5. Closures
+6. Debugger
+7. And more...
+
+However, while there is a lot of missing logic, the original idea of creating a compiler/interpreter from scratch has been achieved. I've learned so much doing this project in the past 7 months, and it has seriously been an incredible journey. I am extremely proud of what I have accomplished, and the fact that I practically did it all myself. The design, the architecture, the algorithms, the code, it all came from me. Were there some moments where I wasn't sure where to go? Yeah, absolutely. Did I get help from Stack Overflow and LLMs in those moments? Without a doubt. But they never told me how to do things, only what approaches would be useful. It was basically rubber-ducking with extra steps. DEFINITELY, never did I use copilot, vibe coding, or any other AI tool to write or even finish a single line of code. I think that it's simple to say, but not that common anymore in this day and age.
+
+This will be my final diary entry. It has been an honour in being given the opportunity to entertain the 1 or 2 (and I'm being pretty generous here) of you who may come across this repository and read through this file, and I appreciate you having stopped by and given me your precious time and attention. Until next time :saluting_face:
+
 ## Entry #8 (January 13, 2026) *Bytecode did not byte me in the ass today*
 
 Happy new year! And what a happy new year it truly is. This is my greatest triumph in this project; I have built my way from the ground up, without any clue as to how compilers work and how much work compilers would be, to this jubilous point we now find ourselves. I have been raised from the abyss, having been burned and scared by the azure flames of the almighty dragon, but alive I remain, with no less than prevailance at my side!

@@ -24,9 +24,8 @@ fn display_constants(constants: &[ObjectRef], f: &mut std::fmt::Formatter<'_>) -
         let borrow = constant.borrow();
 
         if let Object::Code(co) = &*borrow {
-            display_constants(co.constants_pool(), f)?;
-            writeln!(f, "{:p}:", &*borrow)?;
-            display_bytecode(co.bytecode(), co.constants_pool(), f)?;
+            writeln!(f, "{co:p}")?;
+            display_bytecode(co.bytecode(), constants, f)?;
         }
     }
 
@@ -53,6 +52,7 @@ fn display_bytecode(
             OpCode::POP_TOP => write!(f, "POP_TOP")?,
             OpCode::SWAP_TOP => write!(f, "SWAP_TOP")?,
             OpCode::DUP_TOP => write!(f, "DUP_TOP")?,
+            OpCode::INV_TOP => write!(f, "INV_TOP")?,
             OpCode::JUMP_FORWARD(n) => write!(f, "JUMP_FORWARD {n}")?,
             OpCode::JUMP_IF_FALSE(n) => write!(f, "JUMP_IF_FALSE {n}")?,
             OpCode::JUMP_IF_TRUE(n) => write!(f, "JUMP_IF_TRUE {n}")?,
@@ -117,12 +117,22 @@ fn display_bytecode(
                 write!(f, "LOAD_ATTR '{attr}'")?
             }
             OpCode::LOAD_ACCESS => write!(f, "LOAD_ACCESS")?,
-            OpCode::MAKE_FUNCTION(n) => write!(f, "MAKE_FUNCTION {n}")?,
+            OpCode::MAKE_FUNCTION(n, m) => {
+                let func = constants_pool
+                    .get(*m)
+                    .expect(&format!("Constant {n} should exist"))
+                    .clone();
+                let Object::Code(ref func_code) = *func.borrow() else {
+                    panic!("This constant is a non-const type");
+                };
+                write!(f, "MAKE_FUNCTION {n}, Code({func_code:p})")?;
+            }
             OpCode::CALL_FUNCTION(n) => write!(f, "CALL_FUNCTION {n}")?,
             OpCode::BUILD_LIST(n) => write!(f, "BUILD_LIST {n}")?,
             OpCode::BUILD_DICT(n) => write!(f, "BUILD_DICT {n}")?,
             OpCode::BUILD_SET(n) => write!(f, "BUILD_SET {n}")?,
             OpCode::RETURN_VALUE => write!(f, "RETURN_VALUE")?,
+            OpCode::YIELD_VALUE => write!(f, "YIELD_VALUE")?,
             OpCode::PUSH_TEMP => write!(f, "PUSH_TEMP")?,
             OpCode::POP_TEMP => write!(f, "POP_TEMP")?,
         }
@@ -152,11 +162,12 @@ struct LoopContext {
 #[derive(Debug)]
 pub struct BytecodeEmitter {
     is_emitted: bool,
+    is_root: bool,
     symbols: SymbolTable,
     compiled_child_symbol_tables: usize,
-    constants_pool: Vec<ObjectRef>,
-    string_literal_const_idx: HashMap<String, usize>,
-    num_literal_const_idx: HashMap<OrderedFloat<f64>, usize>,
+    constants_pool: Rc<RefCell<Vec<ObjectRef>>>,
+    string_literal_const_idx: Rc<RefCell<HashMap<String, usize>>>,
+    num_literal_const_idx: Rc<RefCell<HashMap<OrderedFloat<f64>, usize>>>,
     loop_contexts: Vec<LoopContext>,
     instructions: Vec<OpCode>,
 }
@@ -167,9 +178,9 @@ impl Display for BytecodeEmitter {
             return write!(f, "Nothing to display, bytecode has not been emitted yet.");
         }
 
-        display_constants(&self.constants_pool, f)?;
+        display_constants(self.constants_pool.borrow().as_ref(), f)?;
         writeln!(f, "<module>:")?;
-        display_bytecode(&self.instructions, &self.constants_pool, f)
+        display_bytecode(&self.instructions, self.constants_pool.borrow().as_ref(), f)
     }
 }
 
@@ -177,11 +188,31 @@ impl BytecodeEmitter {
     pub fn new(symbols: SymbolTable) -> Self {
         Self {
             is_emitted: false,
+            is_root: true,
             symbols,
             compiled_child_symbol_tables: 0,
-            constants_pool: vec![objref!(Object::None)],
-            string_literal_const_idx: HashMap::new(),
-            num_literal_const_idx: HashMap::new(),
+            constants_pool: Rc::new(RefCell::new(vec![objref!(Object::None)])),
+            string_literal_const_idx: Rc::new(RefCell::new(HashMap::new())),
+            num_literal_const_idx: Rc::new(RefCell::new(HashMap::new())),
+            loop_contexts: Vec::new(),
+            instructions: Vec::new(),
+        }
+    }
+
+    fn new_child(
+        symbols: SymbolTable,
+        constants_pool: Rc<RefCell<Vec<ObjectRef>>>,
+        string_literal_const_idx: Rc<RefCell<HashMap<String, usize>>>,
+        num_literal_const_idx: Rc<RefCell<HashMap<OrderedFloat<f64>, usize>>>,
+    ) -> Self {
+        Self {
+            is_emitted: false,
+            is_root: false,
+            symbols,
+            compiled_child_symbol_tables: 0,
+            constants_pool,
+            string_literal_const_idx,
+            num_literal_const_idx,
             loop_contexts: Vec::new(),
             instructions: Vec::new(),
         }
@@ -261,6 +292,8 @@ impl BytecodeEmitter {
 
     /// ```
     /// Condition
+    /// LOAD_ATTR
+    /// CALL_FUNCTION
     /// JUMP_IF_FALSE
     /// Then
     /// ```
@@ -269,6 +302,11 @@ impl BytecodeEmitter {
         let mut total = Emissions(0);
 
         total += self.operation_tree(condition);
+        let bool_method_idx = self.const_string(&"__bool__".into()).0;
+        self.instructions.push(OpCode::LOAD_ATTR(bool_method_idx));
+        total.0 += 1;
+        self.instructions.push(OpCode::CALL_FUNCTION(1));
+        total.0 += 1;
         let jump_ip = self.instructions.len();
         self.instructions.push(OpCode::NOP);
         total.0 += 1;
@@ -287,6 +325,8 @@ impl BytecodeEmitter {
 
     /// ```
     /// Condition
+    /// LOAD_ATTR
+    /// CALL_FUNCTION
     /// JUMP_IF_FALSE
     /// body
     /// JUMP_ABSOLUTE
@@ -299,13 +339,19 @@ impl BytecodeEmitter {
             break_points: Vec::new(),
         });
 
+        let guard_ip = self.instructions.len();
         total += self.operation_tree(condition);
+        let bool_method_idx = self.const_string(&"__bool__".into()).0;
+        self.instructions.push(OpCode::LOAD_ATTR(bool_method_idx));
+        total.0 += 1;
+        self.instructions.push(OpCode::CALL_FUNCTION(1));
+        total.0 += 1;
         let jump_ip = self.instructions.len();
         self.instructions.push(OpCode::NOP);
         total.0 += 1;
         let body_size = self.ast(body);
         total += body_size;
-        self.instructions.push(OpCode::JUMP_ABSOLUTE(jump_ip));
+        self.instructions.push(OpCode::JUMP_ABSOLUTE(guard_ip));
         total.0 += 1;
         let loop_end = self.instructions.len();
 
@@ -445,7 +491,6 @@ impl BytecodeEmitter {
     }
 
     /// ```
-    /// LOAD_CONST
     /// MAKE_FUNCTION
     /// STORE_{LOCAL|DEREF|GLOBAL}
     /// ```
@@ -460,23 +505,27 @@ impl BytecodeEmitter {
 
         // Build code object of function and add it to constants pool
         let child_symbols = self.symbols.child(self.compiled_child_symbol_tables);
-        let mut function_emitter = Self::new(child_symbols.clone());
+        let mut function_emitter = Self::new_child(
+            child_symbols.clone(),
+            self.constants_pool.clone(),
+            self.string_literal_const_idx.clone(),
+            self.num_literal_const_idx.clone(),
+        );
         function_emitter.emit(body);
-        let (child_instructions, _, child_constants) = function_emitter.dissolve();
+        let (child_instructions, _, _) = function_emitter.dissolve();
         let code_object = CodeObject::new(
             child_symbols.num_local_vars(),
             child_symbols.num_deref_vars(),
-            child_constants,
             child_instructions,
         );
-        let code_object_idx = self.constants_pool.len();
-        self.constants_pool.push(objref!(Object::Code(code_object)));
+        let code_object_idx = self.constants_pool.borrow().len();
+        self.constants_pool
+            .borrow_mut()
+            .push(objref!(Object::Code(code_object)));
 
         // Actual bytecode emission
-        self.instructions.push(OpCode::LOAD_CONST(code_object_idx));
-        total.0 += 1;
         self.instructions
-            .push(OpCode::MAKE_FUNCTION(parameters.len()));
+            .push(OpCode::MAKE_FUNCTION(parameters.len(), code_object_idx));
         total.0 += 1;
         total += self.emit_store(identifier);
 
@@ -536,6 +585,11 @@ impl BytecodeEmitter {
     ///     POP_TOP
     /// ][else
     ///     Value
+    ///     [if not pure assign
+    ///         LOAD_{LOCAL|DEREF|GLOBAL}
+    ///         LOAD_ATTR
+    ///         CALL_FUNCTION
+    ///     ]
     ///     STORE_{LOCAL|DEREF|GLOBAL}
     /// ]
     /// ```
@@ -551,6 +605,15 @@ impl BytecodeEmitter {
 
         if accesses.is_empty() {
             total += self.operation_tree(value);
+            if !matches!(asop.comp, Asop::Assign) {
+                total += self.emit_load(variable);
+                let op_method_idx =
+                    self.const_string(&asop.comp.dunderscore_method().to_string().into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
             total += self.emit_store(variable);
         } else {
             total += self.emit_load(variable);
@@ -584,7 +647,7 @@ impl BytecodeEmitter {
                     self.const_string(&asop.comp.dunderscore_method().to_string().into());
                 self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
                 total.0 += 1;
-                self.instructions.push(OpCode::CALL_FUNCTION(1));
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
                 total.0 += 1;
                 self.instructions.push(OpCode::POP_TEMP);
                 total.0 += 1;
@@ -621,16 +684,9 @@ impl BytecodeEmitter {
                 left,
                 right,
             } => {
-                total += self.operation_tree(left);
-                let op_method_idx =
-                    self.const_string(&operation.comp.dunderscore_method().to_string().into());
-                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
-                total.0 += 1;
                 total += self.operation_tree(right);
-                self.instructions.push(OpCode::SWAP_TOP);
-                total.0 += 1;
-                self.instructions.push(OpCode::CALL_FUNCTION(1));
-                total.0 += 1;
+                total += self.operation_tree(left);
+                total += self.operation(operation);
             }
             OperationTree::Identity(marked_component) => match &marked_component.comp {
                 AstNode::function_call {
@@ -648,6 +704,12 @@ impl BytecodeEmitter {
                         total += self.operation_tree(access);
                         self.instructions.push(OpCode::LOAD_ACCESS);
                         total.0 += 1;
+
+                        // Remove the original variable value accessed
+                        self.instructions.push(OpCode::SWAP_TOP);
+                        total.0 += 1;
+                        self.instructions.push(OpCode::POP_TOP);
+                        total.0 += 1;
                     }
                 }
                 AstNode::list(list) => {
@@ -664,7 +726,8 @@ impl BytecodeEmitter {
                         self.instructions.push(OpCode::LOAD_CONST(key_idx.0));
                         total.0 += 1;
                     }
-                    self.instructions.push(OpCode::BUILD_DICT(dictionary.len()));
+                    self.instructions
+                        .push(OpCode::BUILD_DICT(dictionary.len() * 2));
                     total.0 += 1;
                 }
                 AstNode::set(set) => {
@@ -690,6 +753,7 @@ impl BytecodeEmitter {
                     } else {
                         OpCode::LOAD_FALSE
                     });
+                    total.0 += 1;
                 }
                 non_identity_ast!() => {
                     panic!("Tried calling operation_tree() with {marked_component:?}");
@@ -698,6 +762,199 @@ impl BytecodeEmitter {
         }
 
         debug!("BytecodeEmitter::operation_tree() ended");
+        total
+    }
+
+    fn operation(&mut self, op: &MarkedOp) -> Emissions {
+        debug!("BytecodeEmitter::operation() started");
+        let mut total = Emissions(0);
+
+        match &op.comp {
+            Op::Plus => {
+                let op_method_idx = self.const_string(&"__add__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Minus => {
+                let op_method_idx = self.const_string(&"__sub__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Mult => {
+                let op_method_idx = self.const_string(&"__mul__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Div => {
+                let op_method_idx = self.const_string(&"__truediv__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::IntDiv => {
+                let op_method_idx = self.const_string(&"__floordiv__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Mod => {
+                let op_method_idx = self.const_string(&"__mod__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Exp => {
+                let op_method_idx = self.const_string(&"__pow__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Eq => {
+                let op_method_idx = self.const_string(&"__eq__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Neq => {
+                let op_method_idx = self.const_string(&"__eq__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Gt => {
+                let op_method_idx = self.const_string(&"__gt__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Gte => {
+                let op_method_idx = self.const_string(&"__ge__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Lt => {
+                let op_method_idx = self.const_string(&"__lt__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Lte => {
+                let op_method_idx = self.const_string(&"__le__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::And => {
+                let op_method_idx = self.const_string(&"__and__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Or => {
+                let op_method_idx = self.const_string(&"__or__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Not => {
+                let op_method_idx = self.const_string(&"__inv__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(1));
+                total.0 += 1;
+            }
+            Op::BWAnd => {
+                let op_method_idx = self.const_string(&"__bwand__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::BWOr => {
+                let op_method_idx = self.const_string(&"__bwor__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::BWNot => {
+                let op_method_idx = self.const_string(&"__bwnot__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(1));
+                total.0 += 1;
+            }
+            Op::Xor => {
+                let op_method_idx = self.const_string(&"__xor__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::ShLeft => {
+                let op_method_idx = self.const_string(&"__lshift__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::ShRight => {
+                let op_method_idx = self.const_string(&"__rshift__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::In => {
+                let len = self.instructions.len();
+                self.instructions.swap(len - 1, len - 2);
+                let op_method_idx = self.const_string(&"__contains__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::NotIn => {
+                let len = self.instructions.len();
+                self.instructions.swap(len - 1, len - 2);
+                let op_method_idx = self.const_string(&"__contains__".into());
+                self.instructions.push(OpCode::LOAD_ATTR(op_method_idx.0));
+                total.0 += 1;
+                self.instructions.push(OpCode::CALL_FUNCTION(2));
+                total.0 += 1;
+            }
+            Op::Identity => unimplemented!(),
+        }
+
+        if op.negates_dunderscore() {
+            let bool_func = self.const_string(&"bool".into());
+            self.instructions.push(OpCode::LOAD_GLOBAL(bool_func.0));
+            total.0 += 1;
+            self.instructions.push(OpCode::CALL_FUNCTION(1));
+            total.0 += 1;
+            self.instructions.push(OpCode::INV_TOP);
+            total.0 += 1;
+        }
+
         total
     }
 
@@ -728,38 +985,51 @@ impl BytecodeEmitter {
     }
 
     fn const_string(&mut self, s: &MarkedString) -> ConstIndex {
-        match self.string_literal_const_idx.get(&s.comp) {
+        let mut string_literal_const_idx = self.string_literal_const_idx.borrow_mut();
+        match string_literal_const_idx.get(&s.comp) {
             Some(idx) => ConstIndex(*idx),
             None => {
-                let idx = self.constants_pool.len();
+                let idx = self.constants_pool.borrow().len();
                 self.constants_pool
+                    .borrow_mut()
                     .push(objref!(Object::String(s.comp.clone())));
-                self.string_literal_const_idx.insert(s.comp.clone(), idx);
+                string_literal_const_idx.insert(s.comp.clone(), idx);
                 ConstIndex(idx)
             }
         }
     }
 
     fn const_num(&mut self, n: &MarkedNumber) -> ConstIndex {
-        match self.num_literal_const_idx.get(&n.comp.into()) {
+        let mut num_literal_const_idx = self.num_literal_const_idx.borrow_mut();
+        match num_literal_const_idx.get(&n.comp.into()) {
             Some(idx) => ConstIndex(*idx),
             None => {
-                let idx = self.constants_pool.len();
-                self.constants_pool.push(objref!(Object::Number(n.comp)));
-                self.num_literal_const_idx.insert(n.comp.into(), idx);
+                let idx = self.constants_pool.borrow().len();
+                self.constants_pool
+                    .borrow_mut()
+                    .push(objref!(Object::Number(n.comp)));
+                num_literal_const_idx.insert(n.comp.into(), idx);
                 ConstIndex(idx)
             }
         }
     }
 
     /// Consumes the emitter and returns its instructions, symbol_table, and constants_pool respectively.
-    pub fn dissolve(self) -> (Vec<OpCode>, SymbolTable, Vec<ObjectRef>) {
+    pub fn dissolve(self) -> (Vec<OpCode>, SymbolTable, Option<Vec<ObjectRef>>) {
         let BytecodeEmitter {
             instructions,
             symbols,
             constants_pool,
             ..
         } = self;
-        (instructions, symbols, constants_pool)
+        (
+            instructions,
+            symbols,
+            if self.is_root {
+                Some(constants_pool.take())
+            } else {
+                None
+            },
+        )
     }
 }

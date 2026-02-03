@@ -43,6 +43,18 @@ where
 
 impl<T> Copy for MarkedComponent<T> where T: Debug + Copy {}
 
+impl<T> Default for MarkedComponent<T>
+where
+    T: Default + Debug,
+{
+    fn default() -> Self {
+        Self {
+            comp: Default::default(),
+            mark: Default::default(),
+        }
+    }
+}
+
 impl<T> Display for MarkedComponent<T>
 where
     T: Debug + Display,
@@ -99,6 +111,15 @@ where
     fn from(value: T) -> Self {
         Self {
             comp: value,
+            mark: Marker::default(),
+        }
+    }
+}
+
+impl From<&str> for MarkedComponent<String> {
+    fn from(value: &str) -> Self {
+        Self {
+            comp: value.to_string(),
             mark: Marker::default(),
         }
     }

@@ -4,17 +4,17 @@ SymbolTable {
     free_vars: [],
     global_accesses: [
         MarkedComponent {
-            comp: "outer",
-            mark: Marker {
-                row: 2,
-                col: 4,
-            },
-        },
-        MarkedComponent {
             comp: "x",
             mark: Marker {
                 row: 0,
                 col: 0,
+            },
+        },
+        MarkedComponent {
+            comp: "outer",
+            mark: Marker {
+                row: 2,
+                col: 4,
             },
         },
     ],

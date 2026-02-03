@@ -1,3 +1,4 @@
+use indexmap::IndexMap;
 use log::{debug, trace};
 
 use crate::non_identity_ast;
@@ -6,7 +7,7 @@ use crate::parser::building_blocks::Asop;
 use crate::parser::markers::*;
 use crate::parser::ptag::{AstNode, OperationTree};
 
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug, Clone)]
 pub struct SymbolTable {
@@ -31,13 +32,13 @@ enum VarClassification {
 }
 
 struct ScopeEnv {
-    vars: Rc<RefCell<HashMap<MarkedString, VarClassification>>>,
+    vars: Rc<RefCell<IndexMap<MarkedString, VarClassification>>>,
     parent: Option<Rc<Self>>,
 }
 
 impl ScopeEnv {
     fn new(
-        vars: Rc<RefCell<HashMap<MarkedString, VarClassification>>>,
+        vars: Rc<RefCell<IndexMap<MarkedString, VarClassification>>>,
         parent: Option<Rc<Self>>,
     ) -> Self {
         Self { vars, parent }
@@ -139,9 +140,9 @@ impl SymbolTable {
     fn find_vars<'a>(
         root_node: &'a MarkedAstNode,
         inner_scopes: &mut Vec<&'a MarkedAstNode>,
-    ) -> Result<HashMap<MarkedString, VarClassification>, ParseError> {
+    ) -> Result<IndexMap<MarkedString, VarClassification>, ParseError> {
         let mut analysis_node = root_node;
-        let mut result = HashMap::new();
+        let mut result = IndexMap::new();
 
         // Handle parameters as local variables when dealing with a function definition
         if let AstNode::function_def {
@@ -159,7 +160,7 @@ impl SymbolTable {
 
     fn find_vars_ast<'a>(
         node: &'a MarkedAstNode,
-        vars: &mut HashMap<MarkedString, VarClassification>,
+        vars: &mut IndexMap<MarkedString, VarClassification>,
         inner_scopes: &mut Vec<&'a MarkedAstNode>,
     ) -> Result<(), ParseError> {
         match &node.comp {
@@ -313,7 +314,7 @@ impl SymbolTable {
 
     fn find_vars_op<'a>(
         node: &'a MarkedOperationTree,
-        vars: &mut HashMap<MarkedString, VarClassification>,
+        vars: &mut IndexMap<MarkedString, VarClassification>,
         inner_scopes: &mut Vec<&'a MarkedAstNode>,
     ) -> Result<(), ParseError> {
         match &node.comp {
@@ -341,7 +342,7 @@ impl SymbolTable {
 
     fn put_local(
         identifier: &MarkedString,
-        vars: &mut HashMap<MarkedString, VarClassification>,
+        vars: &mut IndexMap<MarkedString, VarClassification>,
     ) -> Result<(), ParseError> {
         match vars.get(identifier) {
             Some(VarClassification::Read) => {
@@ -361,7 +362,7 @@ impl SymbolTable {
         Ok(())
     }
 
-    fn put_read(identifier: &MarkedString, vars: &mut HashMap<MarkedString, VarClassification>) {
+    fn put_read(identifier: &MarkedString, vars: &mut IndexMap<MarkedString, VarClassification>) {
         match vars.get(identifier) {
             Some(VarClassification::Read | VarClassification::Local) => {}
             Some(_) => unreachable!(),
